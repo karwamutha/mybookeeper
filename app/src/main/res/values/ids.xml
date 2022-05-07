@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="loginPage" type="id" />
+    <item name="app_navigation" type="id" />
+    <item name="action_loginPage_to_CreateAccount" type="id" />
+    <item name="CreateAccount" type="id" />
+    <item name="action_loginPage_to_HomePage" type="id" />
+    <item name="homePage" type="id" />
+    <item name="action_HomePage_to_HomeDialog" type="id" />
+    <item name="homeDialog" type="id" />
+    <item name="action_HomeDialog_to_AccountList" type="id" />
+    <item name="accountList" type="id" />
+    <item name="action_AccountList_to_AccountDialog" type="id" />
+    <item name="accountDialog" type="id" />
+    <item name="action_AccountDialog_to_SubAccountList" type="id" />
+    <item name="subAccountList" type="id" />
+    <item name="action_SubAccountList_to_SubAccountDialog" type="id" />
+    <item name="subAccountDialog" type="id" />
+    <item name="action_SubAccountDialog_to_MemberList" type="id" />
+    <item name="MemberList" type="id" />
+    <item name="action_MemberDialog_to_Transactions" type="id" />
+    <item name="Transactions" type="id" />
+    <item name="action_MemberList_to_MemberDialog" type="id" />
+    <item name="MemberDialog" type="id" />
+    <item name="action_CreateAccount_to_LoginPage" type="id" />
+    <item name="action_TransactionDialog_to_ReceiptFragment" type="id" />
+    <item name="nav_host_fragment_activity_transactions" type="id" />
+    <item name="nav_view" type="id" />
+    <item name="tablayout_id" type="id" />
+    <item name="action_home_to_ClientList" type="id" />
+</resources>

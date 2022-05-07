@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:id="@+id/entercltName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter client name"
+        android:textSize="12dp"
+        android:inputType="textVisiblePassword"
+        android:maxLines="1"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"/>
+    <EditText
+        android:id="@+id/entercltMgid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Manager ID"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"/>
+    <EditText
+        android:id="@+id/entercltaccId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="AccId"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"/>
+    <EditText
+        android:id="@+id/entercltSubId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="SubaccId"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"/>
+    </LinearLayout>

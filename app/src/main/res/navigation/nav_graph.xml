@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/HomeFragment">
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.example.mybookkeeper.home.HomeFragment"
+        android:label="Home Page"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_HomeFragment_to_RegisterFragment"
+            app:destination="@id/RegisterFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_ManagerReceiptsFragment"
+            app:destination="@id/ManagerReceiptsFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_AccountReceiptsFragment"
+            app:destination="@id/AccountReceiptsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ManagerReceiptsFragment"
+        android:name="com.example.mybookkeeper.managers.ManagerReceiptsFragment"
+        android:label="Manager Receipts"
+        tools:layout="@layout/fragment_manager_receipts">
+        <action
+            android:id="@+id/action_ManagerReceiptsFragment_to_AccountReceiptsFragment"
+            app:destination="@id/AccountReceiptsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/RegisterFragment"
+        android:name="com.example.mybookkeeper.home.RegisterFragment"
+        android:label="Registration Page"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_RegisterFragment_to_NewPWordFragment"
+            app:destination="@id/NewPWordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/NewPWordFragment"
+        android:name="com.example.mybookkeeper.home.NewPWordFragment"
+        android:label="Login Page"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_NewPWordFragment_to_AccountReceiptsFragment"
+            app:destination="@id/AccountReceiptsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AccountReceiptsFragment"
+        android:name="com.example.mybookkeeper.accounts.AccountReceiptFragment"
+        android:label="Account Receipts"
+        tools:layout="@layout/fragment_account_receipts">
+        <action
+            android:id="@+id/action_AccountReceiptsFragment_to_SubAccountReceiptFragment"
+            app:destination="@id/SubAccountReceiptFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SubAccountReceiptFragment"
+        android:name="com.example.mybookkeeper.subaccounts.SubAccountReceiptFragment"
+        android:label="SubAccount Receipts List"
+        tools:layout="@layout/fragment_subaccount_receipts">
+        <action
+            android:id="@+id/action_SubAccountReceiptFragment_to_ClientReceiptFragment"
+            app:destination="@id/ClientReceiptFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ClientReceiptFragment"
+        android:name="com.example.mybookkeeper.clients.ClientReceiptFragment"
+        tools:layout="@layout/fragment_client_receipts">
+        <action
+            android:id="@+id/action_ClientReceiptFragment_to_TransactionsFragment"
+            app:destination="@id/TransactionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/TransactionsFragment"
+        android:name="com.example.mybookkeeper.fragmernts.TransactionsFragment"
+        tools:layout="@layout/fragment_transactions">
+        <action
+            android:id="@+id/action_TransactionsFragment_to_AddReceiptFeagment"
+            app:destination="@id/AddReceiptFragment" />
+        <action
+            android:id="@+id/action_TransactionsFragment_to_AddExpenseFragment"
+            app:destination="@id/AddExpenseFragment" />
+        <action
+            android:id="@+id/action_TransactionsFragment_to_ReceiptDetailsFragment"
+            app:destination="@id/ReceiptDetailsFragment" />
+        <action
+            android:id="@+id/action_TransactionsFragment_to_ExpensesDetailsragment"
+            app:destination="@id/ExpenseDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AddReceiptFragment"
+        android:name="com.example.mybookkeeper.fragmernts.receipts.AddReceiptFragment"
+        android:label="Add Receipt"
+        tools:layout="@layout/fragment_add_receipt">
+    </fragment>
+    <fragment
+        android:id="@+id/AddExpenseFragment"
+        android:name="com.example.mybookkeeper.fragmernts.expenses.AddExpenseFragment"
+        android:label="Add Expense"
+        tools:layout="@layout/fragment_add_expense">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ReceiptDetailsFragment"
+        android:name="com.example.mybookkeeper.fragmernts.receipts.ReceiptDetailsFragment"
+        android:label="Expense Details"
+        tools:layout="@layout/fragment_receipt_details">
+    </fragment>
+    <fragment
+        android:id="@+id/ExpenseDetailFragment"
+        android:name="com.example.mybookkeeper.fragmernts.expenses.ExpenseDetailFragment"
+        android:label="Expense Details"
+        tools:layout="@layout/fragment_expense_detail">
+    </fragment>
+</navigation>
