@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewClientReceipt"
-    android:orientation="vertical"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/viewClientReceipt"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="1dp">
-    <RelativeLayout
+    android:layout_marginBottom="1dp"
+    card_view:cardElevation="2dp"
+    card_view:cardUseCompatPadding="true">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -14,14 +18,32 @@
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:hint="aaaaaaaaa"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="0dp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textStyle="bold"
+            android:hint="aaaaaaaaa" />
+        <ImageView
+            android:id="@+id/editClient"
+            android:layout_width="28dp"
+            android:layout_height="20sp"
+            android:layout_toLeftOf="@+id/deleteClient"
+            android:layout_weight="1"
+            android:src="@drawable/edit"
+            android:contentDescription="Edit" />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/deleteClient"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/delete"
+            android:contentDescription="Delete" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,22 +53,20 @@
 
         <TextView
             android:id="@+id/tvReceipt"
-            android:layout_width="250dp"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="Receipts"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="0dp"
+            android:text="Receipts" />
 
         <TextView
             android:id="@+id/tvRctAmount"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_marginTop="0dp"/>
+            android:textAlignment="center"
+            android:layout_marginTop="0dp" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,21 +76,19 @@
 
         <TextView
             android:id="@+id/tvExpenses"
-            android:layout_width="250dp"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="Expenses"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="0dp"
+            android:text="Expenses" />
 
         <TextView
             android:id="@+id/tvExAmount"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_marginTop="0dp"/>
+            android:textAlignment="center"
+            android:layout_marginTop="0dp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,19 +98,20 @@
 
         <TextView
             android:id="@+id/tvBalance"
-            android:layout_width="250dp"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="Balances"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"/>
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
+            android:layout_marginTop="0dp"
+            android:text="Balance"/>
 
         <TextView
             android:id="@+id/tvBalAmount"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="20dp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textAlignment="center"
             android:layout_marginTop="0dp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

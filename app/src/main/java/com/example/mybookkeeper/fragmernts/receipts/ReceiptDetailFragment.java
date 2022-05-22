@@ -1,4 +1,4 @@
-package com.example.mybookkeeper.fragmernts.expenses;
+package com.example.mybookkeeper.fragmernts.receipts;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -31,11 +31,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ExpenseDetailFragment extends Fragment implements RefreshableFragment {
+public class ReceiptDetailFragment extends Fragment implements RefreshableFragment {
 
     private SqliteDatabase mDatabase;
-    RecyclerView ExpenseView;
-    EditText eExpNo, eAmount;
+    RecyclerView ReceiptView;
+    ReceiptData ReceiptData;
+    EditText eRctNo, eAmount;
     String nameFromDialog;
     int mngIdFromDialog;
     int acntIdFromDialog;
@@ -43,8 +44,9 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
     int clientIDFromDialog;
     EditText dateFrom, dateTo;
     String startDate, endDate;
-    public static ExpenseDetailFragment getInstance(int clientID){
-        ExpenseDetailFragment r = new ExpenseDetailFragment();
+
+    public static ReceiptDetailFragment getInstance(int clientID){
+        ReceiptDetailFragment r = new ReceiptDetailFragment();
         Bundle args = new Bundle();
         args.putInt("ClientID", clientID);
         r.setArguments(args);
@@ -60,17 +62,17 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ExpenseData ExpenseData = null;
+        ReceiptData receiptData = null;
         Bundle args = getArguments();
 
-        View v = inflater.inflate(R.layout.fragment_expense_detail, container, false);
+        View v = inflater.inflate(R.layout.fragment_receipt_details, container, false);
 
-        ExpenseView = v.findViewById(R.id.myExpenseList);
+        ReceiptView = v.findViewById(R.id.myReceiptList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        ExpenseView.setLayoutManager(linearLayoutManager);
-        ExpenseView.setHasFixedSize(true);
+        ReceiptView.setLayoutManager(linearLayoutManager);
+        ReceiptView.setHasFixedSize(true);
         mDatabase = new SqliteDatabase(getActivity());
-        eExpNo = v.findViewById(R.id.eExpNo);
+        eRctNo = v.findViewById(R.id.eRctNo);
         eAmount = v.findViewById(R.id.eAmount);
         dateFrom = v.findViewById(R.id.edDateFrom);
         dateTo = v.findViewById(R.id.edDateTo);
@@ -146,6 +148,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
                 }
             }
         });
+        //=========================
         if (getArguments() != null) {
             nameFromDialog = getArguments().getString("nameFromDialog");
             mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
@@ -154,27 +157,28 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
             clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Expense Details for ");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt Details for ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
 
         }else{
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO EXPENSES SELECTED");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED EXPENSES NOT FOUND");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ReceiptS SELECTED");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ReceiptS NOT FOUND");
         }
-        refresh();
         dateFrom.setText(startDate);
         dateTo.setText(endDate);
+        refresh();
         return v;
     }
     public void refresh(){
-        ArrayList<ExpenseData> allExpenses = mDatabase.listExpenses(clientIDFromDialog);
-        if (allExpenses.size() > 0) {
-            ExpenseView.setVisibility(View.VISIBLE);
-            ExpenseDetailAdapter mAdapter = new ExpenseDetailAdapter(getActivity(),  this, allExpenses, getArguments().getInt("clientIDFromDialog"));
-            ExpenseView.setAdapter(mAdapter);
+
+        ArrayList<ReceiptData> allReceipts = mDatabase.listReceipts(startDate, endDate, clientIDFromDialog);
+        if (allReceipts.size() > 0) {
+            ReceiptView.setVisibility(View.VISIBLE);
+            ReceiptDetailAdapter mAdapter = new ReceiptDetailAdapter(getActivity(),  this, allReceipts, getArguments().getInt("clientIDFromDialog"));
+            ReceiptView.setAdapter(mAdapter);
         }
         else {
-            ExpenseView.setVisibility(View.GONE);
+            ReceiptView.setVisibility(View.GONE);
             Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
         }
     }
@@ -224,9 +228,9 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
 
     }
 
-//    private void addTaskDialog() {
+//        private void addTaskDialog() {
 //        LayoutInflater inflater = LayoutInflater.from(getActivity());
-//        View subView = inflater.inflate(R.layout.expenses_list_layout, null);
+//        View subView = inflater.inflate(R.layout.receipt_list_layout, null);
 //        final EditText dateField = subView.findViewById(R.id.eDate);
 //        final EditText rctnoField = subView.findViewById(R.id.eRctNo);
 ////        final EditText subField = subView.findViewById(R.id.eSubName);
@@ -236,25 +240,25 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
 ////        final EditText clientField = subView.findViewById(R.id.eClient);
 //        final EditText amountField = subView.findViewById(R.id.eAmount);
 //        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle("Add new Expense");
+//        builder.setTitle("Add new Receipt");
 //        builder.setView(subView);
 //        builder.create();
-//        builder.setPositiveButton("ADD Expense", new DialogInterface.OnClickListener() {
+//        builder.setPositiveButton("ADD Receipt", new DialogInterface.OnClickListener() {
 //            @Override
 //            public void onClick(DialogInterface dialog, int which) {
-//                ExpenseData = mDatabase.searchExpenseByID(Integer.parseInt(mngField.getText().toString()));
+//                ReceiptData = mDatabase.searchReceiptByID(Integer.parseInt(mngField.getText().toString()));
 //                final String date = dateField.getText().toString();
-//                final int expNo = Integer.parseInt(ExpenseData.getExpNo()+"");
+//                finReceiptexpNo = Integer.parseInt(ReceiptData.getExpNo()+"");
 //                final String subname = subField.getText().toString();
-//                final int mngId = Integer.parseInt(ExpenseData.getMgId()+"");
-//                final int accId = Integer.parseInt(ExpenseData.getAccId()+"");
-//                final int subaccId = Integer.parseInt(ExpenseData.getSubId()+"");
-//                final int clientId = Integer.parseInt(ExpenseData.getClientId()+"");
+//                final int mngId = Integer.parseInt(ReceiptData.getMgId()+"");
+//                final int accId = Integer.parseInt(ReceiptData.getAccId()+"");
+//                final int subaccId = Integer.parseInt(ReceiptData.getSubId()+"");
+//                final int clientId = Integer.parseInt(ReceiptData.getClientId()+"");
 //                final double amount = Double.parseDouble(amountField.getText().toString());
 //
 //                if (!TextUtils.isEmpty("" + amount)) {
-//                    ExpenseData newExpense = new ExpenseData(date, expNo, subname, mngId, accId, subaccId, clientId, amount);
-//                    mDatabase.addExpense(newExpense);
+//                    ReceiptData newReceipt = new ReceiptData(date, expNo, subname, mngId, accId, subaccId, clientId, amount);
+//                    mDatabase.addReceipt(newReceipt);
 //                    refresh();
 //                } else {
 //                    Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
@@ -276,5 +280,4 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
             mDatabase.close();
         }
     }
-
 }

@@ -17,7 +17,7 @@ public interface RefreshableFragment {
 
     void navigateToAccountTotal(ManagerTotal managerTotal);
 
-    void navigateToSubAccountTotal(AccountTotal accountTotal);
+    void navigateToSubAccountTotal(AccountTotal subAccountTotal);
 
     void navigateToClientTotal(SubAccountTotal accountTotal);
 

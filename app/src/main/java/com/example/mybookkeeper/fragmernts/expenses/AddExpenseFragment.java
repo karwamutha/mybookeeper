@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
 import com.example.mybookkeeper.SqliteDatabase;
-import com.example.mybookkeeper.clients.Client;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,19 +24,15 @@ import java.util.Date;
 public class AddExpenseFragment extends Fragment {
 
     private SqliteDatabase mDatabase;
-    EditText eExpNo, eDate, eSubName, eMgclid, eAccId, eSubaccId, eClientId, eAmount;
-    Button btnInsert, btnClear;
-    String NameHolder, NumberHolder, SQLiteDataBaseQueryHolder;
+    EditText eExpNo, eDate, eSubName, eCltName, eDescr,eAmount;
     Button buttonEnter;
     View buttonClear;
-    String subAccNameFromGallety;
-    ;
-    int mngIdFromFFromGallety;
-    int acntIdFFromGallety;
-    int subAccIdFFromGallety;
-    String clientNameFFromGallety;
-    int clientIDFFromGallety;
-    Client client = null;
+
+    String nameFromDialog;
+    int mngIdFromDialog;
+    int subAccIdFromDialog;
+    int acntIdFromDialog;
+    int clientIDFromDialog;
 
     public static AddExpenseFragment getInstance(int clientID) {
         AddExpenseFragment r = new AddExpenseFragment();
@@ -58,35 +53,31 @@ public class AddExpenseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
         mDatabase = new SqliteDatabase(getActivity());
-        eExpNo = view.findViewById(R.id.eExpNo);
-        eSubName = view.findViewById(R.id.eSubName);
-        eMgclid = view.findViewById(R.id.eMgclid);
         eDate = view.findViewById(R.id.eDate);
-        eAccId = view.findViewById(R.id.eAccId);
-        eSubaccId = view.findViewById(R.id.eSubaccId);
-        eClientId = view.findViewById(R.id.eClient);
+        eExpNo = view.findViewById(R.id.eExpNo);
+        eCltName = view.findViewById(R.id.eClientName);
+        eDescr = view.findViewById(R.id.eDescription);
         eAmount = view.findViewById(R.id.eAmount);
         eAmount.requestFocus();
         buttonEnter = view.findViewById(R.id.btnInsert);
         buttonClear = view.findViewById(R.id.btnClear);
+
         if (getArguments() != null) {
-            subAccNameFromGallety = getArguments().getString("subAccNameFromGallety");
-            mngIdFromFFromGallety = getArguments().getInt("mngIdFromFFromGallety");
-            acntIdFFromGallety = getArguments().getInt("acntIdFFromGallety");
-            subAccIdFFromGallety = getArguments().getInt("subAccIdFFromGallety");
-            clientNameFFromGallety = getArguments().getString("clientNameFFromGallety");
-            clientIDFFromGallety = getArguments().getInt("clientIDFFromGallety");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Add Expense for ");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("CLIENT: " + clientNameFFromGallety);
-        } else {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO RECEIPT SELECTED");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED RECEIPT NOT FOUND");
+            nameFromDialog = getArguments().getString("nameFromDialog");
+            mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
+            acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
+            subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
+            clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SubAccount Expense");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
+        }else{
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO Expense SELECTED");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED Expense NOT FOUND");
         }
-        eMgclid.setText(mngIdFromFFromGallety + "");
-        eSubaccId.setText(subAccIdFFromGallety + "");
-        eAccId.setText("" + acntIdFFromGallety);
-        eClientId.setText(clientIDFFromGallety + "");
-        eSubName.setText(subAccNameFromGallety);
+        eCltName.setText(nameFromDialog);
+//        eDescr.setText(nameFromDialog);
+
+
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         String formattedDate = df.format(date);
@@ -122,20 +113,26 @@ public class AddExpenseFragment extends Fragment {
             public void onClick(View view) {
                 final String date = eDate.getText().toString();
                 final int expNo = Integer.parseInt(eExpNo.getText().toString());
-                final String subname = eSubName.getText().toString();
-                final int clMgid= Integer.parseInt(eMgclid.getText().toString());
-                final int accId= Integer.parseInt(eAccId.getText().toString());
-                final int subaccId= Integer.parseInt(eSubaccId.getText().toString());
-                final int clientid = Integer.parseInt(eClientId.getText().toString());
+                nameFromDialog = getArguments().getString("nameFromDialog");
+                mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
+                acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
+                subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
+                clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
+                final int expMngId= mngIdFromDialog;
+                final int expAccId= acntIdFromDialog;
+                final int expSubaccId= subAccIdFromDialog;
+                final int expClientid = clientIDFromDialog;
+                final String expCltName = nameFromDialog;
+                final String descr = eDescr.getText().toString();
                 final double amount = Double.parseDouble(eAmount.getText().toString());
-                Toast.makeText(getActivity(), amount+"", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(), amount+"", Toast.LENGTH_LONG).show();
                 if (TextUtils.isEmpty("" + amount)) {
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
 
-                    ExpenseData newExpense = new ExpenseData(date, expNo, subname, clMgid, accId, subaccId, clientid, amount);
+                    ExpenseData newExpense = new ExpenseData(date, expNo, expMngId, expAccId, expSubaccId, expClientid, expCltName, descr, amount);
                     mDatabase.addExpense(newExpense);
-                    Toast.makeText(getActivity(), "Success: expense saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Success: Expense saved", Toast.LENGTH_SHORT).show();
                     eExpNo.setText(mDatabase.getNextExpenseID() + "");
                     eAmount.setText("");
                 }

@@ -16,22 +16,27 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class TransactionsFragment extends Fragment {
+public class TransactionDialogFragment extends Fragment {
 
     private TextView tvClient,tvSubaccout;
-    String subAccNameFromClients;
-    String clientNameFromClients;
+
+    EditText dateFrom, dateTo;
+    String startDate, endDate;
+    Button buttonAddRct, buttonAddExp, buttonRctDtl,
+            buttonExpDtl, buttonAllRct, buttonAllExp;
     int mngIdFromFromClients;
     int acntIdFromClients;
     int subAccIdFromClients;
     int clientIDFromClients;
-    EditText dateFrom, dateTo;
+    String subAccNameFromClients;
+    String clientNameFromClients;
 
-    public TransactionsFragment() {
+    public TransactionDialogFragment() {
         // Required empty public constructor
     }
 
@@ -40,14 +45,31 @@ public class TransactionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
-        Button buttonAddRct = (Button) view.findViewById(R.id.btnAddRct);
-        Button buttonAddExp = (Button) view.findViewById(R.id.btnAddExp);
-        Button buttonRctDtl = (Button) view.findViewById(R.id.btnRctDetails);
-        Button buttonExpDtl = (Button) view.findViewById(R.id.btnExpDetails);
-//        tvClient = view.findViewById(R.id.txtClient);
+        buttonAddRct = (Button) view.findViewById(R.id.btnAddRct);
+        buttonAddExp = (Button) view.findViewById(R.id.btnAddExp);
+        buttonRctDtl = (Button) view.findViewById(R.id.btnRctDetails);
+        buttonExpDtl = (Button) view.findViewById(R.id.btnExpDetails);
+        buttonAllRct = (Button) view.findViewById(R.id.btnAllReceipts);
+        buttonAllExp = (Button) view.findViewById(R.id.btnAllExpenses);
+        dateFrom = view.findViewById(R.id.edDateFrom);
         dateTo = view.findViewById(R.id.edDateTo);
-
         Date date = Calendar.getInstance().getTime();
+
+        //========FIRST AND LAST DAY OD MONTH
+        Calendar calendar = Calendar.getInstance();
+        Date today = calendar.getTime();// Get the current date
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // Setting the first day of month
+        Date firstDayOfMonth = calendar.getTime();
+        calendar.add(Calendar.MONTH, 1);  // Move to next month
+        calendar.set(Calendar.DAY_OF_MONTH, 1);    // setting the 1st day of the month
+        calendar.add(Calendar.DATE, -1); // Move a day back from the date
+        Date lastDayOfMonth = calendar.getTime();
+        DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd"); // Formatting the date
+        String firstDayOfMonthStr = sdf.format(firstDayOfMonth); // String todayStr = sdf.format(today);
+        String lastDayOfMonthStr = sdf.format(lastDayOfMonth);
+        //====================
+
+        //=============CDATEPICKERS
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         String formattedDate = df.format(date);
         dateFrom = view.findViewById(R.id.edDateFrom);
@@ -69,6 +91,7 @@ public class TransactionsFragment extends Fragment {
                             SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
                             String formattedDate = df.format(calendar.getTime());
                             dateFrom.setText(formattedDate);
+                            dateTo.setText(formattedDate);
                         }
                     }, mYear, mMonth, mDay);
                     datePickerDialog.show();
@@ -104,13 +127,11 @@ public class TransactionsFragment extends Fragment {
                 }
             }
         });
-
         if (getArguments() != null) {
-
             subAccNameFromClients = getArguments().getString("subAccNameFromClients");
             mngIdFromFromClients = getArguments().getInt("mngIdFromFromClients");
             acntIdFromClients = getArguments().getInt("acntIdFromClients");
-            subAccIdFromClients = getArguments().getInt("subAccIdFromSubacc");
+            subAccIdFromClients = getArguments().getInt("subAccIdFromClients");
             clientNameFromClients = getArguments().getString("clientNameFromClients");
             //tvClient.setText(clientNameFromClients);
             clientIDFromClients = getArguments().getInt("clientIDFromClients");
@@ -119,7 +140,15 @@ public class TransactionsFragment extends Fragment {
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACTIVITY SELECTED");
         }
+            startDate = firstDayOfMonthStr;
+            endDate = lastDayOfMonthStr;
+//            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Transactions for: ");
+//            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromClients);
 
+        dateFrom.setText(startDate);
+        dateTo.setText(endDate);
+        buttonRctDtl.setText("For: " + clientNameFromClients);
+        buttonExpDtl.setText("For: " + clientNameFromClients);
         final int[] page = {3};
 
         buttonAddRct.setOnClickListener(new View.OnClickListener() {
@@ -131,8 +160,7 @@ public class TransactionsFragment extends Fragment {
                 args.putInt("acntIdFFromGallety", acntIdFromClients);
                 args.putInt("subAccIdFFromGallety", subAccIdFromClients);
                 args.putString("clientNameFFromGallety", clientNameFromClients);
-                args.putInt("clientIDFFromGallety", clientIDFromClients);
-                NavHostFragment.findNavController(TransactionsFragment.this)
+                args.putInt("clientIDFFromGallety", clientIDFromClients);                NavHostFragment.findNavController(TransactionDialogFragment.this)
                         .navigate(R.id.action_TransactionsFragment_to_AddReceiptFeagment, args);
             }
         });
@@ -148,7 +176,7 @@ public class TransactionsFragment extends Fragment {
                 args.putInt("clientIDFFromGallety", clientIDFromClients);
                 args.putString("startDate", dateFrom.getText().toString());
                 args.putString("endDate", dateTo.getText().toString());
-                NavHostFragment.findNavController(TransactionsFragment.this)
+                NavHostFragment.findNavController(TransactionDialogFragment.this)
                         .navigate(R.id.action_TransactionsFragment_to_AddExpenseFragment, args);
             }
         });
@@ -164,8 +192,8 @@ public class TransactionsFragment extends Fragment {
                 args.putInt("clientIDFFromGallety", clientIDFromClients);
                 args.putString("startDate", dateFrom.getText().toString());
                 args.putString("endDate", dateTo.getText().toString());
-                NavHostFragment.findNavController(TransactionsFragment.this)
-                        .navigate(R.id.action_TransactionsFragment_to_ReceiptDetailsFragment, args);
+                NavHostFragment.findNavController(TransactionDialogFragment.this)
+                        .navigate(R.id.action_TransactionsFragment_to_ReceiptDetailFragment, args);
             }
         });
         buttonExpDtl.setOnClickListener(new View.OnClickListener() {
@@ -180,8 +208,34 @@ public class TransactionsFragment extends Fragment {
                 args.putInt("clientIDFFromGallety", clientIDFromClients);
                 args.putString("startDate", dateFrom.getText().toString());
                 args.putString("endDate", dateTo.getText().toString());
-                NavHostFragment.findNavController(TransactionsFragment.this)
+                NavHostFragment.findNavController(TransactionDialogFragment.this)
                         .navigate(R.id.action_TransactionsFragment_to_ExpensesDetailsragment, args);
+            }
+        });
+        buttonAllRct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Bundle args = new Bundle();
+//                args.putString("nameFromDialog", nameFromClients);
+//                args.putInt("mngIdFromDialog", mngIdFromClients);
+//                args.putInt("acntIdFromDialog", acntIdFromClients);
+//                args.putInt("subAccIdFromDialog", subAccIdFromClients);
+//                args.putInt("clientIDFromDialog", clientIDFromClients);
+//                NavHostFragment.findNavController(TransactionDialogFragment.this)
+//                        .navigate(R.id.action_TransactionsFragment_to_AllReceiptFeagment, args);
+            }
+        });
+        buttonAllExp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Bundle args = new Bundle();
+//                args.putString("nameFromDialog", nameFromClients);
+//                args.putInt("mngIdFromDialog", mngIdFromClients);
+//                args.putInt("acntIdFromDialog", acntIdFromClients);
+//                args.putInt("subAccIdFromDialog", subAccIdFromClients);
+//                args.putInt("clientIDFromDialog", clientIDFromClients);
+//                NavHostFragment.findNavController(TransactionDialogFragment.this)
+//                        .navigate(R.id.action_TransactionsFragment_to_AllExpenseFeagment, args);
             }
         });
         return view;

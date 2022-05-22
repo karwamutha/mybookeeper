@@ -85,7 +85,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_weight="0.9"
-        android:id="@+id/myReceiptList"
+        android:id="@+id/myAllExpenseList"
         android:layout_below="@+id/licear1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

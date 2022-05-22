@@ -74,7 +74,7 @@
     </fragment>
     <fragment
         android:id="@+id/TransactionsFragment"
-        android:name="com.example.mybookkeeper.fragmernts.TransactionsFragment"
+        android:name="com.example.mybookkeeper.fragmernts.TransactionDialogFragment"
         tools:layout="@layout/fragment_transactions">
         <action
             android:id="@+id/action_TransactionsFragment_to_AddReceiptFeagment"
@@ -83,11 +83,29 @@
             android:id="@+id/action_TransactionsFragment_to_AddExpenseFragment"
             app:destination="@id/AddExpenseFragment" />
         <action
-            android:id="@+id/action_TransactionsFragment_to_ReceiptDetailsFragment"
-            app:destination="@id/ReceiptDetailsFragment" />
+            android:id="@+id/action_TransactionsFragment_to_ReceiptDetailFragment"
+            app:destination="@id/ReceiptDetailFragment" />
         <action
             android:id="@+id/action_TransactionsFragment_to_ExpensesDetailsragment"
             app:destination="@id/ExpenseDetailFragment" />
+        <action
+            android:id="@+id/action_TransactionsFragment_to_AllReceiptFeagment"
+            app:destination="@id/AllReceiptFeagment" />
+        <action
+            android:id="@+id/action_TransactionsFragment_to_AllExpenseFeagment"
+            app:destination="@id/AllExpenseFeagment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AllReceiptFeagment"
+        android:name="com.example.mybookkeeper.fragmernts.allReceipts.AllReceiptFragment"
+        android:label="All Receipts"
+        tools:layout="@layout/fragment_allreceipts">
+    </fragment>
+    <fragment
+        android:id="@+id/AllExpenseFeagment"
+        android:name="com.example.mybookkeeper.fragmernts.expenses.AllExpensesFragment"
+        android:label="All Expenses"
+        tools:layout="@layout/fragment_allexpenses">
     </fragment>
     <fragment
         android:id="@+id/AddReceiptFragment"
@@ -103,8 +121,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/ReceiptDetailsFragment"
-        android:name="com.example.mybookkeeper.fragmernts.receipts.ReceiptDetailsFragment"
+        android:id="@+id/ReceiptDetailFragment"
+        android:name="com.example.mybookkeeper.fragmernts.receipts.ReceiptDetailFragment"
         android:label="Expense Details"
         tools:layout="@layout/fragment_receipt_details">
     </fragment>

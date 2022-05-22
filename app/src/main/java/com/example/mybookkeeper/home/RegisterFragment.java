@@ -56,7 +56,6 @@ public class RegisterFragment extends Fragment {
             mngIdFromHomePwd = getArguments().getInt("mngIdFromHomePwd");
             phoneFromHomePwd = getArguments().getString("magNameFromHomePwd");
             pWordFromHomePwd = getArguments().getString("pWordFromHomePwd");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Change Password:");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(mngNameFromHomePwd);
 
         }else {
@@ -87,7 +86,7 @@ public class RegisterFragment extends Fragment {
             } else {
                 String newPassword = eNewPassword.getText().toString();
                 newManager.setManagerPassword(newPassword);
-                mDatabase.updateManagers(newManager);
+//                mDatabase.updateManagers(newManager);
                 Bundle args = new Bundle();
                 args.putInt("mngIdFromRegister", mngIdFromHomePwd);
                 args.putString("mngNameFromRegister", eName.getText().toString());

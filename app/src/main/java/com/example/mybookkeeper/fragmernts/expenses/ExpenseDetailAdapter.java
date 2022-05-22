@@ -1,5 +1,6 @@
 package com.example.mybookkeeper.fragmernts.expenses;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
@@ -27,18 +27,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.ExpenseDataViewHolder>
+public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailAdapter.ExpenseDataViewHolder>
         implements Filterable {
 
     private final RefreshableFragment refreshable;
-    private  EditText date, amount;
+    private  EditText date, descr, amount;
     private ImageView editexp, deleteexp;
     private Context context;
     private ArrayList<ExpenseData> listExpenseDatas;
     private SqliteDatabase mDatabase;
     int clientId;
 
-    ExpenseAdapter(Context context, RefreshableFragment refreshable, ArrayList<ExpenseData> listExpenseDatas, int clientId) {
+    ExpenseDetailAdapter(Context context, RefreshableFragment refreshable, ArrayList<ExpenseData> listExpenseDatas, int clientId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.listExpenseDatas = listExpenseDatas;
@@ -48,12 +48,10 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
 
     @Override
     public ExpenseDataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.expenses_list_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.expenses_detail_layout, parent, false);
 
         date = view.findViewById(R.id.eDate);
         amount = view.findViewById(R.id.eAmount);
-        editexp = view.findViewById(R.id.editExpense);
-        deleteexp = view.findViewById(R.id.deleteExpense);
         return new ExpenseDataViewHolder(view);
     }
 
@@ -62,12 +60,37 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
 
         final ExpenseData expenseData = listExpenseDatas.get(position);
         holder.tvDate.setText(expenseData.getDate());
+        holder.tvDescr.setText(expenseData.getDescr());
         holder.tvAmount.setText("" + expenseData.getAmount());
-        holder.imgEdit.setOnClickListener(view -> editTaskDialog(expenseData));
-        holder.imgDelete.setOnClickListener(view -> {
-            Toast.makeText(context, "Heloo. delete.", Toast.LENGTH_SHORT).show();
-            mDatabase.deleteExpense(expenseData.getExpNo());
-            refreshable.refresh();
+        holder.editExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTaskDialog(expenseData);
+            }
+        });
+        holder.deleteExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Confirm Delete");
+                alertDialogBuilder.setIcon(R.drawable.delete);
+                alertDialogBuilder.setMessage("Delete   "+ "'" + expenseData.getExpID()+"'  ?");
+                alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mDatabase.deleteExpense(expenseData.getExpID());
+                        refreshable.refresh();
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
         });
     }
 
@@ -107,22 +130,22 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
 
     private void editTaskDialog(final ExpenseData expense) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View subView = inflater.inflate(R.layout.add_expense, null);
+        View subView = inflater.inflate(R.layout.edit_expense, null);
         final EditText dateField = subView.findViewById(R.id.enterDate);
         final EditText expnoField = subView.findViewById(R.id.enterExpNo);
-        final EditText subNameField = subView.findViewById(R.id.enterSubName);
-        final EditText mngField = subView.findViewById(R.id.enterMgid);
-        final EditText accField = subView.findViewById(R.id.enteraccId);
-        final EditText subaccField = subView.findViewById(R.id.enterSubId);
-        final EditText clientField = subView.findViewById(R.id.enterCltId);
+        final EditText mngIdField = subView.findViewById(R.id.enterMgid);
+        final EditText accIdField = subView.findViewById(R.id.enteraccId);
+        final EditText subIdField = subView.findViewById(R.id.enterSubId);
+        final EditText cltIdField = subView.findViewById(R.id.enterCltId);
+        final EditText cltNameField = subView.findViewById(R.id.enterCltName);
+        final EditText descrField = subView.findViewById(R.id.eDescription);
         final EditText amtField = subView.findViewById(R.id.enterAmount);
         //dateField.setEnabled(false);
         expnoField.setEnabled(false);
-        subNameField.setEnabled(false);
-        mngField.setEnabled(false);
-        accField.setEnabled(false);
-        subaccField.setEnabled(false);
-        clientField.setEnabled(false);
+        mngIdField.setEnabled(false);
+        accIdField.setEnabled(false);
+        subIdField.setEnabled(false);
+        cltIdField.setEnabled(false);
 
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
@@ -155,13 +178,15 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
         });
 
         if (expense != null) {
+            Toast.makeText(context, expense.getDescr(), Toast.LENGTH_SHORT).show();
             dateField.setText(String.valueOf(expense.getDate()));
             expnoField.setText("" + expense.getExpNo());
-            subNameField.setText("" + expense.getSubname());
-            mngField.setText("" + expense.getMgId());
-            accField.setText("" + expense.getAccId());
-            subaccField.setText("" + expense.getSubId());
-            clientField.setText("" + expense.getClientId());
+            mngIdField.setText("" + expense.getMgId());
+            accIdField.setText("" + expense.getAccId());
+            subIdField.setText("" + expense.getSubId());
+            cltIdField.setText("" + expense.getClientId());
+            cltNameField.setText(expense.getCltName());
+            descrField.setText(expense.getDescr());
             amtField.setText("" + expense.getAmount());
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -172,26 +197,29 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String date = dateField.getText().toString();
-                final int expenseno = Integer.parseInt(expnoField.getText().toString());
-                final String subname = subNameField.getText().toString();
-                final int mngid = Integer.parseInt(mngField.getText().toString());
-                final int accid = Integer.parseInt(accField.getText().toString());
-                final  int subaccid = Integer.parseInt(subaccField.getText().toString());
-                final  int clntid = Integer.parseInt(clientField.getText().toString());
+                final int expNo = Integer.parseInt(expnoField.getText().toString());
+                final int mngid = Integer.parseInt(mngIdField.getText().toString());
+                final int accid = Integer.parseInt(accIdField.getText().toString());
+                final  int subid = Integer.parseInt(subIdField.getText().toString());
+                final  int clntid = Integer.parseInt(cltIdField.getText().toString());
+                final String cltName = cltNameField.getText().toString();
+                final String ddescr = descrField.getText().toString();
                 final double amt = Double.parseDouble(amtField.getText().toString());
-                if (TextUtils.isEmpty(expenseno+"") || expenseno+"" == null) {
-                    Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
+
+                Toast.makeText(context, ddescr, Toast.LENGTH_LONG).show();
+                if (TextUtils.isEmpty(amt+"") || ddescr == null) {
+                    Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_SHORT).show();
                 } else {
                     expense.setDate(date);
-                    expense.setExpNo(expenseno);
-                    expense.setSubname(subname);
+                    expense.setExpNo(expNo);
                     expense.setMgId(mngid);
                     expense.setAccId(accid);
-                    expense.setSubId(subaccid);
+                    expense.setSubId(subid);
                     expense.setClientId(clntid);
-                    expense.setSubname(subname);
+                    expense.setCltName(cltName);
+                    expense.setDescr(ddescr);
                     expense.setAmount(amt);
-                    mDatabase.updateExpenses(expense);
+                    mDatabase.updateExpense(expense);
                     refreshable.refresh();
                 }
             }
@@ -202,16 +230,18 @@ public class ExpenseAdapter<S> extends RecyclerView.Adapter<ExpenseAdapter.Expen
     static class ExpenseDataViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvDate;
+        TextView tvDescr;
         TextView tvAmount;
-        ImageView imgEdit;
-        ImageView imgDelete;
+        ImageView editExpense;
+        ImageView deleteExpense;
 
         ExpenseDataViewHolder(View itemView) {
             super(itemView);
             tvDate = itemView.findViewById(R.id.tvDate);
-            imgEdit = itemView.findViewById(R.id.editExpense);
-            imgDelete = itemView.findViewById(R.id.deleteExpense);
+            tvDescr = itemView.findViewById(R.id.tvDescriptipn);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            editExpense = itemView.findViewById(R.id.editExpense);
+            deleteExpense = itemView.findViewById(R.id.deleteExpense);
         }
     }
 }

@@ -1,12 +1,18 @@
 package com.example.mybookkeeper.clients;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,18 +22,14 @@ import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.util.ArrayList;
 
-public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptAdapter.ClientViewHolder>
+public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptAdapter.ReceiptDataViewHolder>
         implements Filterable {
     private final RefreshableFragment refreshable;
     private ArrayList<ClientTotal> ClientReceiptAdapter;
     private  TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+    private Context context;
     private SqliteDatabase mDatabase;
     int mngId;
-
-    private String myString;
-    private Context context;
-
-//    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
     public ClientReceiptAdapter(Context context, RefreshableFragment refreshable, ArrayList<ClientTotal> ClientReceiptAdapter, int mngId) {
         this.context = context;
@@ -38,23 +40,57 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
     }
 
     @Override
-    public ClientReceiptAdapter.ClientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ClientReceiptAdapter.ReceiptDataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.client_receipt_layout, parent, false);
         tvReceiptAmount = (TextView) view.findViewById(R.id.tvRctAmount);
         tvExpenseAmount = view.findViewById(R.id.tvExAmount);
         tvBalanceAmount = view.findViewById(R.id.tvBalAmount);
-        return new ClientReceiptAdapter.ClientViewHolder(view);
+        return new ClientReceiptAdapter.ReceiptDataViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ClientReceiptAdapter.ClientViewHolder holder, int position) {
+    public void onBindViewHolder(ClientReceiptAdapter.ReceiptDataViewHolder holder, int position) {
         final ClientTotal clientTotal = ClientReceiptAdapter.get(position);
         holder.tvName.setText(clientTotal.getClient().getCltName());
         holder.tvReceiptAmount.setText("" + clientTotal.getReceiptsTotal());
         holder.tvExpenseAmount.setText("" + clientTotal.getExpensesTotal());
         holder.tvBalanceAmount.setText("" + (clientTotal.getReceiptsTotal() - clientTotal.getExpensesTotal()));
-        holder.itemView.setOnClickListener(ll -> {
-            refreshable.navigateToClientsDialog(clientTotal);
+        holder.viewClientReceipt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // open fragment here
+                refreshable.navigateToClientsDialog(clientTotal);
+            }
+        });
+        holder.editClient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTaskDialog(clientTotal);
+            }
+        });
+        holder.deleteClient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Confirm Delete");
+                alertDialogBuilder.setIcon(R.drawable.delete);
+                alertDialogBuilder.setMessage("Delete   "+ "'" + clientTotal.getClient().getCltName()+"'  ?");
+                alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mDatabase.deleteClient(clientTotal.getClient().getId());
+                        refreshable.refresh();
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
         });
     }
 
@@ -92,16 +128,67 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
         return ClientReceiptAdapter.size();
     }
 
-    static class ClientViewHolder extends RecyclerView.ViewHolder {
+    private void editTaskDialog(final ClientTotal clientTotal) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View accView = inflater.inflate(R.layout.add_clients, null);
+        final EditText clientNameField = accView.findViewById(R.id.enterCltName);
+        final EditText mngIdField = accView.findViewById(R.id.enterCltMgid);
+        final EditText accIdField = accView.findViewById(R.id.enterCltAccId);
+        final EditText subIdField = accView.findViewById(R.id.enterCltSubId);
+
+        if (clientTotal != null) {
+            clientNameField.setText(clientTotal.getClient().getCltName());
+            mngIdField.setText(String.valueOf(clientTotal.getClient().getCltMgid()));
+            accIdField.setText(String.valueOf(clientTotal.getClient().getCltAccid()));
+            subIdField.setText(String.valueOf(clientTotal.getClient().getCltSubId()));
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Edit client");
+        builder.setView(accView);
+        builder.create();
+        builder.setPositiveButton("EDIT CONTACT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String clientName = clientNameField.getText().toString();
+                final int mngId = Integer.parseInt( mngIdField.getText().toString());
+                final int accId = Integer.parseInt( accIdField.getText().toString());
+                final int subId = Integer.parseInt( subIdField.getText().toString());
+                if (TextUtils.isEmpty(clientName) || clientTotal == null) {
+                    Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
+                } else {
+                    clientTotal.getClient().setCltName(clientName);
+                    clientTotal.getClient().setCltMgid(mngId);
+                    clientTotal.getClient().setCltAccid(accId);
+                    clientTotal.getClient().setCltSubId(subId);
+                    mDatabase.updateClients(clientTotal);
+                    refreshable.refresh();
+                }
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(context, "Task cancelled", Toast.LENGTH_LONG).show();
+            }
+        });
+        builder.show();
+    }
+
+    static class ReceiptDataViewHolder extends RecyclerView.ViewHolder {
         View viewClientReceipt;
         TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+        ImageView deleteClient;
+        ImageView editClient;
 
-        ClientViewHolder(View itemView) {
+        ReceiptDataViewHolder(View itemView) {
             super(itemView);
+            viewClientReceipt = itemView.findViewById(R.id.viewClientReceipt);
             tvName = itemView.findViewById(R.id.tvName);
             tvReceiptAmount = itemView.findViewById(R.id.tvRctAmount);
             tvExpenseAmount = itemView.findViewById(R.id.tvExAmount);
             tvBalanceAmount = itemView.findViewById(R.id.tvBalAmount);
+            deleteClient = itemView.findViewById(R.id.deleteClient);
+            editClient = itemView.findViewById(R.id.editClient);
         }
     }
 }

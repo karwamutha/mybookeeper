@@ -20,35 +20,27 @@
                 android:id="@+id/tvcltName"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tvcltMgid"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvcltName"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/tvcltAccId"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvcltMgid"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="@color/black" />
             <TextView
                 android:id="@+id/tvcltSubId"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvcltAccId"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="@color/black"/>
         </RelativeLayout>
 
         <ImageView

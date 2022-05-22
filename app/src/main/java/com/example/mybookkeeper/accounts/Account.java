@@ -28,7 +28,7 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public String getAccName() {
+    public String getAccName(String accName) {
         return accName;
     }
 
@@ -41,4 +41,7 @@ public class Account {
     public void setMgId(int MgId) { this.MgId = MgId;
     }
 
+    public String getAccName() {
+        return accName;
+    }
 }

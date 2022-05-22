@@ -1,9 +1,13 @@
 package com.example.mybookkeeper.managers;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,7 +16,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
 import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
@@ -33,7 +36,6 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     int accId;
     String fromAcc;
     String clientName;
-    EditText dateFrom, dateTo;
 
     String subAccNameFromGallety;;
     int mngIdFromFFromGallety;
@@ -41,10 +43,10 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     int subAccIdFFromGallety;
     String clientNameFFromGallety;
     int mngIdFFromGallety;
-    String startDate, endDate;
     Manager manager;
     String mngNameFromHome;
     int mngIdFromHome;
+    Button bAddNew, bReceipt, bExpense;
 
     public static ManagerReceiptsFragment getInstance(int mngId){
         ManagerReceiptsFragment r = new ManagerReceiptsFragment();
@@ -67,51 +69,36 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
         Bundle args = getArguments();
 
         View view = inflater.inflate(R.layout.fragment_manager_receipts, container, false);
-
-        ReceiptManagerView = view.findViewById(R.id.myReceiptManagerList);
+        bAddNew = view.findViewById(R.id.btnAdd);
+        ReceiptManagerView = view.findViewById(R.id.myManagerReceiptList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ReceiptManagerView.setLayoutManager(linearLayoutManager);
         ReceiptManagerView.setHasFixedSize(true);
         mDatabase = new SqliteDatabase(getActivity());
         eRctNo = view.findViewById(R.id.eRctNo);
-        eSubName = view.findViewById(R.id.eSubName);
-        eMgclid = view.findViewById(R.id.eMgclid);
-        eDate = view.findViewById(R.id.eDate);
-        eAccId = view.findViewById(R.id.eAccId);
-        eSubaccId = view.findViewById(R.id.eSubaccId);
-        eClientId = view.findViewById(R.id.eClient);
         eAmount = view.findViewById(R.id.eAmount);
 
-        dateFrom = view.findViewById(R.id.edDateFrom);
-        dateTo = view.findViewById(R.id.edDateTo);
-
         if (getArguments() != null) {
-//            subAccNameFromGallety = getArguments().getString("subAccNameFromGallety");
-//            mngNameFromHome = getArguments().getString("mngNameFromHome");
-//            mngIdFromHome = getArguments().getInt("mngIdFromHome");
-//            acntIdFFromGallety = getArguments().getInt("acntIdFFromGallety");
-//            subAccIdFFromGallety = getArguments().getInt("subAccIdFFromGallety");
-//            clientNameFFromGallety = getArguments().getString("clientNameFFromGallety");
-//            clientIDFFromGallety = getArguments().getInt("clientIDFFromGallety");
-            startDate = getArguments().getString("startDate");
-            endDate = getArguments().getString("endDate");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("MANAGERS LIST");
-
+            mngIdFromHome = getArguments().getInt("mngIdFromHome");
         }else{
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
+//            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
+//            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
         }
 
-        dateFrom.setText(startDate);
-        dateTo.setText(endDate);
         refresh();
+        bAddNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addTaskDialog();
+            }
+        });
         return view;
     }
     public void refresh(){
-        ArrayList<ManagerTotal> allReceipts = mDatabase.listMngrTotalReceipts(startDate, endDate);
+        ArrayList<ManagerTotal> allReceipts = mDatabase.listMngrTotalReceipts();
         if (allReceipts.size() > 0) {
             ReceiptManagerView.setVisibility(View.VISIBLE);
-            ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngNameFromHome"));
+            ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngIdFromHome"));
             ReceiptManagerView.setAdapter(mAdapter);
         }
         else {
@@ -138,13 +125,11 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     @Override
     public void navigateToAccountTotal(ManagerTotal managerTotal) {
         Bundle args = new Bundle();
-//        args.putInt("mngIdFromMngs", manager.getManagerID());
-//        args.putString("mngNameFromMngs", manager.getManagerName());
-//        args.putString("mngPhoneFromMngs", manager.getManagerPhone());
-//        args.putString("originPage", "FromMngs");
+        args.putInt("mngIdFromMngs", managerTotal.getManager().getManagerID());
+        args.putString("mngNameFromMngs", managerTotal.getManager().getManagerName());
+        args.putString("mngPhoneFromMngs", managerTotal.getManager().getManagerPhone());
+        args.putString("originPage", "FromMngs");
         args.putString("btnState", "showeButton");
-        args.putString("startDate", dateFrom.getText().toString());
-        args.putString("endDate", dateTo.getText().toString());
         NavHostFragment.findNavController(ManagerReceiptsFragment.this)
                 .navigate(R.id.action_ManagerReceiptsFragment_to_AccountReceiptsFragment, args);
     }
@@ -174,6 +159,40 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
 
     }
 
+    private void addTaskDialog() {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View mgView = inflater.inflate(R.layout.add_managers, null);
+        final EditText nameField = mgView.findViewById(R.id.enterName);
+        final EditText phoneField = mgView.findViewById(R.id.enterPhone);
+        final EditText passwordField = mgView.findViewById(R.id.enterPword);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Add new MANAGEER");
+        builder.setView(mgView);
+        builder.create();
+        builder.setPositiveButton("ADD MANAGEER", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String mgName = nameField.getText().toString();
+                final String mgPhone = phoneField.getText().toString();
+                final String mgPassword = passwordField.getText().toString();
+                if (TextUtils.isEmpty(mgName)) {
+                    Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Manager newManager = new Manager(mgName, mgPhone, mgPassword);
+                    mDatabase.addManagers(newManager);
+                    refresh();
+                }
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getActivity(), "Task cancelled", Toast.LENGTH_LONG).show();
+            }
+        });
+        builder.show();
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

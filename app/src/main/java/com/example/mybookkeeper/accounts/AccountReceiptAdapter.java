@@ -1,12 +1,18 @@
 package com.example.mybookkeeper.accounts;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,6 +63,36 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
                 refreshable.navigateToSubAccountTotal(accountTotal);
             }
         });
+        holder.editAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTaskDialog(accountTotal);
+            }
+        });
+        holder.deleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Confirm Delete");
+                alertDialogBuilder.setIcon(R.drawable.delete);
+                alertDialogBuilder.setMessage("Delete   "+ "'" + accountTotal.getAccount().getAccName()+"'  ?");
+                alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mDatabase.deleteAccount(accountTotal.getAccount().getAccountId());
+                        refreshable.refresh();
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
     }
 
     public Filter getFilter() {
@@ -93,9 +129,49 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
         return AccountReceiptAdapter.size();
     }
 
+    private void editTaskDialog(final AccountTotal accountTotal) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View accView = inflater.inflate(R.layout.add_accounts, null);
+        final EditText accNameField = accView.findViewById(R.id.enterAccName);
+        final EditText mgIdField = accView.findViewById(R.id.enterMgid);
+
+        if (accountTotal != null) {
+            accNameField.setText(accountTotal.getAccount().getAccName());
+            mgIdField.setText(String.valueOf(accountTotal.getAccount().getMgId()));
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Edit account");
+        builder.setView(accView);
+        builder.create();
+        builder.setPositiveButton("EDIT CONTACT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String accountName = accNameField.getText().toString();
+                final int mgId = Integer.parseInt( mgIdField.getText().toString());
+                if (TextUtils.isEmpty(accountName) || accountTotal == null) {
+                    Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
+                } else {
+                    accountTotal.getAccount().setAccName(accountName);
+                    accountTotal.getAccount().setMgId(mgId);
+                    mDatabase.updateAccounts(accountTotal);
+                    refreshable.refresh();
+                }
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(context, "Task cancelled", Toast.LENGTH_LONG).show();
+            }
+        });
+        builder.show();
+    }
+
     static class ReceiptDataViewHolder extends RecyclerView.ViewHolder {
         View viewAccountReceipt;
         TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+        ImageView deleteAccount;
+        ImageView editAccount;
 
         ReceiptDataViewHolder(View itemView) {
             super(itemView);
@@ -104,6 +180,8 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
             tvReceiptAmount = itemView.findViewById(R.id.tvRctAmount);
             tvExpenseAmount = itemView.findViewById(R.id.tvExAmount);
             tvBalanceAmount = itemView.findViewById(R.id.tvBalAmount);
+            deleteAccount = itemView.findViewById(R.id.deleteAccount);
+            editAccount = itemView.findViewById(R.id.editAccount);
         }
     }
 }

@@ -5,36 +5,40 @@ public class ExpenseData {
     private int expId;
     private String date;
     private int expNo;
-    private String subname;
     private int mgid;
     private int accId;
     private int subId;
     private int clientId;
-    private double amount;
+    private String cltName;
+    private String descr;
+    private double amt;
 
-    public ExpenseData(int expId, String date, int expNo, String subname,
-                       int mgid, int accId, int subId,
-                       int clientId, double amount) {
+    public ExpenseData(int expId, String date, int expNo, int mgid,
+                       int accId, int subId, int clientId, String cltName,
+                       String descr, double amt) {
         this.expId = expId;
         this.expNo = expNo;
-        this.subname = subname;
         this.date = date;
         this.mgid = mgid;
         this.accId = accId;
         this.subId = subId;
         this.clientId = clientId;
-        this.amount = amount;
+        this.cltName = cltName;
+        this.descr = descr;
+        this.amt = amt;
     }
 
-    public ExpenseData(String date, int expNo, String subname, int mgid, int accId, int subaccId, int clientId, double amt) {
+    public ExpenseData(String date, int expNo, int mgid, int accId,
+                       int subaccId, int clientId, String cltName, String descr, double amt) {
         this.expNo = expNo;
-        this.subname = subname;
         this.date = date;
         this.mgid = mgid;
         this.accId = accId;
         this.subId = subaccId;
         this.clientId = clientId;
-        this.amount = amt;
+        this.cltName = cltName;
+        this.descr = descr;
+        this.amt = amt;
     }
 
     public int getExpID() {
@@ -48,12 +52,6 @@ public class ExpenseData {
     }
     public void setExpNo(int expNo) {
         this.expNo = expNo;
-    }
-    public String getSubname() {
-        return subname;
-    }
-    public void setSubname(String subname) {
-        this.subname = subname;
     }
     public String getDate() {
         return date;
@@ -86,12 +84,22 @@ public class ExpenseData {
         this.clientId = clientId;
     }
 
+    public String getCltName() {
+        return cltName;
+    }
+    public void setCltName(String cltName) { this.cltName = cltName; }
+
+    public String getDescr() {
+        return descr;
+    }
+    public void setDescr(String descr) { this.cltName = descr; }
+
     public double getAmount() {
-        return amount;
+        return amt;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setAmount(double amt) {
+        this.amt = amt;
     }
 
 }

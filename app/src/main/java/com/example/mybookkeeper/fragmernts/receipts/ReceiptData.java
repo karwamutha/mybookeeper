@@ -5,36 +5,36 @@ public class ReceiptData {
     private int rctId;
     private String date;
     private int rctNo;
-    private String subname;
     private int mgid;
     private int accId;
     private int subId;
     private int clientId;
+    private String cltName;
     private double amount;
 
-    public ReceiptData(int rctId, String date, int rctNo, String subname,
+    public ReceiptData(int rctId, String date, int rctNo,
                        int mgid, int accId, int subId,
-                       int clientId, double amount) {
+                       int clientId, String cltName, double amount) {
         this.rctId = rctId;
         this.date = date;
         this.rctNo = rctNo;
-        this.subname = subname;
         this.mgid = mgid;
         this.accId = accId;
         this.subId = subId;
         this.clientId = clientId;
+        this.cltName = cltName;
         this.amount = amount;
     }
 
-    public ReceiptData(String date, int rctNo, String mngName, int mgid,
-                       int accId, int subaccId, int clientId, double amt) {
+    public ReceiptData(String date, int rctNo, int mgid,
+                       int accId, int subaccId, int clientId, String cltName, double amt) {
         this.date = date;
         this.rctNo = rctNo;
-        this.subname = subname;
         this.mgid = mgid;
         this.accId = accId;
         this.subId = subaccId;
         this.clientId = clientId;
+        this.cltName = cltName;
         this.amount = amt;
     }
 
@@ -49,12 +49,6 @@ public class ReceiptData {
     }
     public void setRctNo(int rctNo) {
         this.rctNo = rctNo;
-    }
-    public String getSubname() {
-        return subname;
-    }
-    public void setSubname(String subname) {
-        this.subname = subname;
     }
     public String getDate() {
         return date;
@@ -87,6 +81,12 @@ public class ReceiptData {
         this.clientId = clientId;
     }
 
+    public String getCltName() {
+        return cltName;
+    }
+    public void setCltName(String cltName) {
+        this.cltName = cltName;
+    }
     public double getAmount() {
         return amount;
     }

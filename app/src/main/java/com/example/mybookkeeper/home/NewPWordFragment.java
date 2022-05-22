@@ -53,7 +53,6 @@ public class NewPWordFragment extends Fragment {
             mngIdFromRegister = getArguments().getInt("mngIdFromRegister");
             phoneFromRegister = getArguments().getString("phoneFromRegister");
             pWordFromRegister = getArguments().getString("pWordFromRegister");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Registration foo PhoneNo:");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(mngNameFromRegister);
         }else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO MANAGER SELECTED");

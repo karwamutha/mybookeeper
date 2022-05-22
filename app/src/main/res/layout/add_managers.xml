@@ -11,7 +11,7 @@
         android:hint="enter manager name"
         android:layout_marginTop="10dp"
         android:textSize="12sp"
-        android:inputType="textVisiblePassword"
+        android:inputType="text|textCapWords"
         android:maxLines="1"
         android:layout_marginEnd="8dp"
         android:padding="12dp"/>

@@ -10,6 +10,8 @@ import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.Client;
 import com.example.mybookkeeper.clients.ClientTotal;
+//import com.example.mybookkeeper.fragmernts.allReceipts.AllReceiptData;
+//import com.example.mybookkeeper.fragmernts.allexpenses.AllExpensesData;
 import com.example.mybookkeeper.fragmernts.expenses.ExpenseData;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.managers.Manager;
@@ -57,25 +59,26 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     private static final String CLIENT_SUBAC_ID = "Subac_Id";
 
     //RECEIPTS_TABLE COLUMNS
-    private static final String RECEIPT_ID = "ReceiptId";
-    private static final String RECEIPT_DATE = "ReceiptDate";
+    private static final String RECEIPT_ID = "RctId";
+    private static final String RECEIPT_DATE = "Date";
     private static final String RECEIPT_NO = "RctNo";
-    private static final String REC_SUB_NAME = "SubName";
     private static final String REC_MG_ID = "RctMgID";
     private static final String REC_ACC_ID = "AccID";
     private static final String REC_SUBAC_ID = "SubacID";
     private static final String REC_CLIENT_ID = "ClientId";
+    private static final String REC_CLIENT_NAME = "CltName";
     private static final String RECEIPT_AMOUNT = "Amount";
 
     //EXPENSES_TABLE COLUMNS
-    private static final String EXPENSE_ID = "ExpenseId";
-    private static final String EXPENSE_DATE = "Expense_Date";
+    private static final String EXPENSE_ID = "ExpId";
+    private static final String EXPENSE_DATE = "Date";
     private static final String EXPENSE_NO = "ExpNo";
-    private static final String EXP_SUB_NAME = "SubName";
     private static final String EXP_MG_ID = "ExpMgID";
     private static final String EXP_ACC_ID = "AccID";
     private static final String EXP_SUBAC_ID = "SubacID";
     private static final String EXP_CLIENT_ID = "ClientId";
+    private static final String EXP_CLIENT_NAME = "CltName";
+    private static final String DESCRIPTION = "Descr";
     private static final String EXPENSE_AMOUNT = "Amount";
 
     public SqliteDatabase(Context context) {
@@ -123,11 +126,11 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                 + " INTEGER PRIMARY KEY,"
                 + RECEIPT_DATE + " TEXT,"
                 + RECEIPT_NO + " TEXT,"
-                + REC_SUB_NAME + " TEXT,"
                 + REC_MG_ID + " TEXT,"
                 + REC_ACC_ID + " TEXT,"
                 + REC_SUBAC_ID + " TEXT,"
                 + REC_CLIENT_ID + " TEXT,"
+                + REC_CLIENT_NAME + " TEXT,"
                 + RECEIPT_AMOUNT + " TEXT" + ")";
 
         //CREATE EXPENSE_TABLE
@@ -136,11 +139,12 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                 + " INTEGER PRIMARY KEY,"
                 + EXPENSE_DATE + " TEXT,"
                 + EXPENSE_NO + " TEXT,"
-                + EXP_SUB_NAME + " TEXT,"
                 + EXP_MG_ID + " TEXT,"
                 + EXP_ACC_ID + " TEXT,"
                 + EXP_SUBAC_ID + " TEXT,"
                 + EXP_CLIENT_ID + " TEXT,"
+                + EXP_CLIENT_NAME + " TEXT,"
+                + DESCRIPTION + " TEXT,"
                 + EXPENSE_AMOUNT + " TEXT" + ")";
 
         db.execSQL(CREATE_MANAGER_TABLE);
@@ -237,7 +241,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                 String name = cursor.getString(cursor.getColumnIndex(SUBACCOUNT_NAME));
                 int sub_mg_ID = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_MG_ID)));
                 accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_AC_ID)));
-                storeSubAccounts.add(new SubAccount(subaccountID, name, sub_mg_ID, accId));
+                storeSubAccounts.add(new SubAccount(name, sub_mg_ID, accId));
             }
             while (cursor.moveToNext());
         }
@@ -268,7 +272,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ReceiptData> listReceipts(int clientId) {
+    public ArrayList<ReceiptData> listReceipts(String startDate, String endDate, int clientId) {
         String sql = "select * from " + RECEIPT_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -279,13 +283,13 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                     int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_ID)));
                     String rctDate = cursor.getString(cursor.getColumnIndex(RECEIPT_DATE));
                     int rctNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_NO)));
-                    String subName = cursor.getString(cursor.getColumnIndex(REC_SUB_NAME));
                     int rctMgid = cursor.getInt(cursor.getColumnIndex(REC_MG_ID));
                     int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_ACC_ID)));
                     int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_SUBAC_ID)));
                     clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(REC_CLIENT_NAME));
                     double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(RECEIPT_AMOUNT)));
-                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, subName, rctMgid, accId, subaccId, clientId, amount));
+                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, rctMgid, accId, subaccId, clientId, cltName, amount));
                 }
                 while (cursor.moveToNext());
             }
@@ -307,19 +311,45 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                     int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_ID)));
                     String rctDate = cursor.getString(cursor.getColumnIndex(RECEIPT_DATE));
                     int rctNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_NO)));
-                    String subName = cursor.getString(cursor.getColumnIndex(REC_SUB_NAME));
                     int rctMgid = cursor.getInt(cursor.getColumnIndex(REC_MG_ID));
                     int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_ACC_ID)));
                     int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_SUBAC_ID)));
                     clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(REC_CLIENT_NAME));
                     double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(RECEIPT_AMOUNT)));
-                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, subName, rctMgid, accId, subaccId, clientId, amount));
+                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, rctMgid, accId, subaccId, clientId, cltName, amount));
                 }
                 while (cursor.moveToNext());
             }
             cursor.close();
         }
         return storeReceipts;
+    }
+
+    //FETCHING ALL RECEIPTS
+    public ArrayList<ReceiptData> listAllReceipts() {
+        String sql = "select * from " + RECEIPT_TABLE + "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<ReceiptData> storeAllReceipts = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(sql, null)) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_ID)));
+                    String rctDate = cursor.getString(cursor.getColumnIndex(RECEIPT_DATE));
+                    int rctNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_NO)));
+                    int rctMgid = cursor.getInt(cursor.getColumnIndex(REC_MG_ID));
+                    int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_ACC_ID)));
+                    int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_SUBAC_ID)));
+                    int clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(REC_CLIENT_NAME));
+                    double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(RECEIPT_AMOUNT)));
+                    storeAllReceipts.add(new ReceiptData(id, rctDate, rctNo, rctMgid, accId, subaccId, clientId, cltName, amount));
+                }
+                while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return storeAllReceipts;
     }
 
     //FETCHING ALL MANAGER RECEIPTS
@@ -335,13 +365,13 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                     int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_ID)));
                     String rctDate = cursor.getString(cursor.getColumnIndex(RECEIPT_DATE));
                     int rctNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_NO)));
-                    String subName = cursor.getString(cursor.getColumnIndex(REC_SUB_NAME));
                     int rctMgid = cursor.getInt(cursor.getColumnIndex(REC_MG_ID));
                     int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_ACC_ID)));
                     int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_SUBAC_ID)));
-                    mngIDFromManager = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+                    int cltId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(REC_CLIENT_NAME));
                     double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(RECEIPT_AMOUNT)));
-                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, subName, rctMgid, accId, subaccId, mngIDFromManager, amount));
+                    storeReceipts.add(new ReceiptData(id, rctDate, rctNo, rctMgid, accId, subaccId, cltId, cltName, amount));
                 }
                 while (cursor.moveToNext());
             }
@@ -350,17 +380,15 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return storeReceipts;
     }
 
-    public ArrayList<ManagerTotal> listMngrTotalReceipts(String startDate, String endDate) {
+    public ArrayList<ManagerTotal> listMngrTotalReceipts() {
         ArrayList<ManagerTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + MANAGER_TABLE + " AS m " +
                 "LEFT JOIN (select " + REC_MG_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
-                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
-                + " <= \"" + endDate + "\" GROUP BY " + REC_MG_ID + ") AS r ON m." + MANAGER_ID + " = " +
+                + " GROUP BY " + REC_MG_ID + ") AS r ON m." + MANAGER_ID + " = " +
                 "r." + REC_MG_ID + " " +
                 "LEFT JOIN (select " + EXP_MG_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
-                + " WHERE " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
-                + " <= \"" + endDate + "\" GROUP BY " + EXP_MG_ID + ") AS e ON m." + MANAGER_ID + " = " +
+                + " GROUP BY " + EXP_MG_ID + ") AS e ON m." + MANAGER_ID + " = " +
                 "e." + EXP_MG_ID;
         SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.rawQuery(sql, null)) {
@@ -395,9 +423,66 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                 + " WHERE " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
                 + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS e ON m." + ACCOUNT_ID + " = " +
                 "e." + EXP_ACC_ID;
-//        String sql = "select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
-//                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
-//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID;
+//        String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
+//                "FROM " + ACCOUNT_TABLE + " AS m " +
+//                "LEFT JOIN (select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+//                + " WHERE " +  REC_MG_ID + "=" + "mngIdFromMngs" + " AND " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS r ON m." + ACCOUNT_ID + " = " +
+//                "r." + REC_ACC_ID + " " +
+//                "LEFT JOIN (select " + EXP_ACC_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
+//                + " WHERE " +  EXP_MG_ID + "=" + "mngIdFromMngs" + " AND " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS e ON m." + ACCOUNT_ID + " = " +
+//                "e." + EXP_ACC_ID;
+        SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.rawQuery(sql, null)) {
+            while (cursor.moveToNext()){
+
+                int account_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ACCOUNT_ID)));
+                String myName = cursor.getString(cursor.getColumnIndex(ACCOUNT_NAME));
+                int myAcMngId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(AC_MNG_ID)));
+                Account account = new Account(account_id, myName, myAcMngId);
+                AccountTotal accountTotal = new AccountTotal(
+                        account,
+                        cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
+                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")));
+                items.add(accountTotal);
+            }
+        } catch (Exception er){
+            er.printStackTrace();
+        }
+        return items;
+    }
+    //accounts_table(m) < receipts_table(r) < expense_table(e)
+    /*
+     2    2   2
+     3        3
+     4    4   4
+     5    5   5
+     6
+     */
+    public ArrayList<AccountTotal> listAccTotalReceipts(String startDate, String endDate, int managerID) {
+        ArrayList<AccountTotal> items = new ArrayList<>();
+        String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
+                "FROM " + ACCOUNT_TABLE + " AS m " +
+                "LEFT JOIN (select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS r ON m." + ACCOUNT_ID + " = " +
+                "r." + REC_ACC_ID + " " +
+                "LEFT JOIN (select " + EXP_ACC_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
+                + " WHERE " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS e ON m." + ACCOUNT_ID + " = " +
+                "e." + EXP_ACC_ID +
+                " WHERE m." + AC_MNG_ID + " like '" + managerID + "'";
+//        String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
+//                "FROM " + ACCOUNT_TABLE + " AS m " +
+//                "LEFT JOIN (select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+//                + " WHERE " +  REC_MG_ID + "=" + "mngIdFromMngs" + " AND " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS r ON m." + ACCOUNT_ID + " = " +
+//                "r." + REC_ACC_ID + " " +
+//                "LEFT JOIN (select " + EXP_ACC_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
+//                + " WHERE " +  EXP_MG_ID + "=" + "mngIdFromMngs" + " AND " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID + ") AS e ON m." + ACCOUNT_ID + " = " +
+//                "e." + EXP_ACC_ID;
         SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()){
@@ -441,7 +526,45 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                 String myName = cursor.getString(cursor.getColumnIndex(SUBACCOUNT_NAME));
                 int mySubAcMngId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_MG_ID)));
                 int mySubAcId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_AC_ID)));
-                SubAccount subaccount = new SubAccount(subaccount_id, myName, mySubAcMngId, mySubAcId);
+                SubAccount subaccount = new SubAccount(myName, mySubAcMngId, mySubAcId);
+                SubAccountTotal subAccountTotal = new SubAccountTotal(
+                        subaccount,
+                        cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
+                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")));
+                items.add(subAccountTotal);
+            }
+        } catch (Exception er){
+            er.printStackTrace();
+        }
+        return items;
+    }
+
+
+    public ArrayList<SubAccountTotal> listSubAccTotalReceipts(String startDate, String endDate, int accountID) {
+        ArrayList<SubAccountTotal> items = new ArrayList<>();
+        String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
+                "FROM " + SUBACCOUNT_TABLE + " AS m " +
+                "LEFT JOIN (select " + REC_SUBAC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + REC_SUBAC_ID + ") AS r ON m." + SUBACCOUNT_ID + " = " +
+                "r." + REC_SUBAC_ID + " " +
+                "LEFT JOIN (select " + EXP_SUBAC_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
+                + " WHERE " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + REC_SUBAC_ID + ") AS e ON m." + SUBACCOUNT_ID + " = " +
+                "e." + EXP_SUBAC_ID + " " +
+                " WHERE m." + SUB_AC_ID + " like '" + accountID + "' ";
+//        String sql = "select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+//                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID;
+        SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.rawQuery(sql, null)) {
+            while (cursor.moveToNext()){
+
+                int subaccount_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUBACCOUNT_ID)));
+                String myName = cursor.getString(cursor.getColumnIndex(SUBACCOUNT_NAME));
+                int mySubAcMngId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_MG_ID)));
+                int mySubAcId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_AC_ID)));
+                SubAccount subaccount = new SubAccount(myName, mySubAcMngId, mySubAcId);
                 SubAccountTotal subAccountTotal = new SubAccountTotal(
                         subaccount,
                         cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
@@ -491,6 +614,44 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
+    public ArrayList<ClientTotal> listClientTotalReceipts(String startDate, String endDate, int cltSubId) {
+        ArrayList<ClientTotal> items = new ArrayList<>();
+        String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
+                "FROM " + CLIENT_TABLE + " AS m " +
+                "LEFT JOIN (select " + REC_CLIENT_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + REC_CLIENT_ID + ") AS r ON m." + CLIENT_ID + " = " +
+                "r." + REC_CLIENT_ID + " " +
+                "LEFT JOIN (select " + EXP_CLIENT_ID + ", SUM(" + EXPENSE_AMOUNT + ") AS Total from " + EXPENSE_TABLE
+                + " WHERE " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " + "" + EXPENSE_DATE
+                + " <= \"" + endDate + "\" GROUP BY " + EXP_CLIENT_ID + ") AS e ON m." + CLIENT_ID + " = " +
+                "e." + EXP_CLIENT_ID+ " " +
+                " WHERE m." + CLIENT_SUBAC_ID + " like '" + cltSubId + "' ";
+//        String sql = "select " + REC_ACC_ID + ", SUM(" + RECEIPT_AMOUNT + ") AS Total from " + RECEIPT_TABLE
+//                + " WHERE " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " + "" + RECEIPT_DATE
+//                + " <= \"" + endDate + "\" GROUP BY " + REC_ACC_ID;
+        SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.rawQuery(sql, null)) {
+            while (cursor.moveToNext()){
+
+                int client_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(CLIENT_ID)));
+                String myName = cursor.getString(cursor.getColumnIndex(CLIENT_NAME));
+                int myClientMngId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(CLIENT_MG_ID)));
+                int myClientAcId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(CLIENT_AC_ID)));
+                int myClientSubAcId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(CLIENT_SUBAC_ID)));
+                Client client = new Client(client_id, myName, myClientMngId, myClientAcId, myClientSubAcId);
+                ClientTotal clientTotal = new ClientTotal(
+                        client,
+                        cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
+                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")));
+                items.add(clientTotal);
+            }
+        } catch (Exception er){
+            er.printStackTrace();
+        }
+        return items;
+    }
+
     public SubAccount searchSubAccountByAccId(int id){
         String sql = "SELECT * FROM " + SUBACCOUNT_TABLE + " WHERE " + SUBACCOUNT_ID + " " +
                 "like '" + id + "' ";
@@ -501,7 +662,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
             String mySubName = cursor.getString(cursor.getColumnIndex(SUBACCOUNT_NAME));
             int myMngId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_MG_ID)));
             int subaccID = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_AC_ID)));
-            return new SubAccount(subaccount_id, mySubName, myMngId, subaccID);
+            return new SubAccount(mySubName, myMngId, subaccID);
         }
         return null;
     }
@@ -518,14 +679,15 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                     int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_ID)));
                     String expDate = cursor.getString(cursor.getColumnIndex(EXPENSE_DATE));
                     int expNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_NO)));
-                    String subName = cursor.getString(cursor.getColumnIndex(EXP_SUB_NAME));
                     int expMgid = cursor.getInt(cursor.getColumnIndex(EXP_MG_ID));
                     int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_ACC_ID)));
                     int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_SUBAC_ID)));
                     clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(EXP_CLIENT_NAME));
+                    String descr = cursor.getString(cursor.getColumnIndex(DESCRIPTION));
                     double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(EXPENSE_AMOUNT)));
 
-                    storeExpenses.add(new ExpenseData(id, expDate, expNo, subName, expMgid, accId, subaccId, clientId, amount));
+                    storeExpenses.add(new ExpenseData(id, expDate, expNo, expMgid, accId, subaccId, clientId, cltName, descr, amount));
                 }
                 while (cursor.moveToNext());
             }
@@ -547,14 +709,15 @@ public class SqliteDatabase extends SQLiteOpenHelper {
                     int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_ID)));
                     String expDate = cursor.getString(cursor.getColumnIndex(EXPENSE_DATE));
                     int expNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_NO)));
-                    String subName = cursor.getString(cursor.getColumnIndex(EXP_SUB_NAME));
                     int expMgid = cursor.getInt(cursor.getColumnIndex(EXP_MG_ID));
                     int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_ACC_ID)));
                     int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_SUBAC_ID)));
                     clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_CLIENT_ID)));
+                    String cltName = cursor.getString(cursor.getColumnIndex(EXP_CLIENT_NAME));
+                    String descr = cursor.getString(cursor.getColumnIndex(DESCRIPTION));
                     double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(EXPENSE_AMOUNT)));
 
-                    storeExpenses.add(new ExpenseData(id, expDate, expNo, subName, expMgid, accId, subaccId, clientId, amount));
+                    storeExpenses.add(new ExpenseData(id, expDate, expNo, expMgid, accId, subaccId, clientId, cltName, descr, amount));
                 }
                 while (cursor.moveToNext());
             }
@@ -563,6 +726,33 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return storeExpenses;
     }
 
+//    //FETCHING ALL RECEIPTS
+//    public ArrayList<AllExpensesData> listAllExpenses() {
+//        String sql = "select * from " + EXPENSE_TABLE + "";
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        ArrayList<AllExpensesData> storeAllExpenses = new ArrayList<>();
+//        try (Cursor cursor = db.rawQuery(sql, null)) {
+//            if (cursor.moveToFirst()) {
+//                do {
+//                    int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_ID)));
+//                    String expDate = cursor.getString(cursor.getColumnIndex(EXPENSE_DATE));
+//                    int expNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_NO)));
+//                    int expMgid = cursor.getInt(cursor.getColumnIndex(EXP_MG_ID));
+//                    int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_ACC_ID)));
+//                    int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_SUBAC_ID)));
+//                    int clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_CLIENT_ID)));
+//                    String cltName = cursor.getString(cursor.getColumnIndex(EXP_CLIENT_NAME));
+//                    String descr = cursor.getString(cursor.getColumnIndex(DESCRIPTION));
+//                    double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(EXPENSE_AMOUNT)));
+//
+//                    storeAllExpenses.add(new AllExpensesData(id, expDate, expNo, expMgid, accId, subaccId, clientId, cltName, descr, amount));
+//                }
+//                while (cursor.moveToNext());
+//            }
+//            cursor.close();
+//        }
+//        return storeAllExpenses;
+//    }
     //==================== ADD ITEM ========================================
 
     //ADD A MANAGER
@@ -576,20 +766,20 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD AN ACCOUNT
-    public void addAccounts(Account accounts) {
+    public void addAccounts(Account account) {
         ContentValues values = new ContentValues();
-        values.put(ACCOUNT_NAME, accounts.getAccName());
-        values.put(AC_MNG_ID, accounts.getMgId());
+        values.put(ACCOUNT_NAME, account.getAccName());
+        values.put(AC_MNG_ID, account.getMgId());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(ACCOUNT_TABLE, null, values);
     }
 
     //ADD AN SUBACCOUNT
-    public void addSubAccounts(SubAccount subaccounts) {
+    public void addSubAccounts(SubAccount subaccount) {
         ContentValues values = new ContentValues();
-        values.put(SUBACCOUNT_NAME, subaccounts.getSubAccName());
-        values.put(SUB_MG_ID, subaccounts.getSubMgId());
-        values.put(SUB_AC_ID, subaccounts.getAccId());
+        values.put(SUBACCOUNT_NAME, subaccount.getSubAccName());
+        values.put(SUB_MG_ID, subaccount.getSubMgId());
+        values.put(SUB_AC_ID, subaccount.getsubAccId());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(SUBACCOUNT_TABLE, null, values);
     }
@@ -610,11 +800,11 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(RECEIPT_DATE, receipts.getDate());
         values.put(RECEIPT_NO, receipts.getRctNo());
-        values.put(REC_SUB_NAME, receipts.getSubname());
         values.put(REC_MG_ID, receipts.getMgId());
         values.put(REC_ACC_ID, receipts.getAccId());
         values.put(REC_SUBAC_ID, receipts.getSubId());
         values.put(REC_CLIENT_ID, receipts.getClientId());
+        values.put(REC_CLIENT_NAME, receipts.getCltName());
         values.put(RECEIPT_AMOUNT, receipts.getAmount());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(RECEIPT_TABLE, null, values);
@@ -625,11 +815,12 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(EXPENSE_DATE, expenseData.getDate());
         values.put(EXPENSE_NO, expenseData.getExpNo());
-        values.put(EXP_SUB_NAME, expenseData.getSubname());
         values.put(EXP_MG_ID, expenseData.getMgId());
         values.put(EXP_ACC_ID, expenseData.getAccId());
         values.put(EXP_SUBAC_ID, expenseData.getSubId());
         values.put(EXP_CLIENT_ID, expenseData.getClientId());
+        values.put(EXP_CLIENT_NAME, expenseData.getCltName());
+        values.put(DESCRIPTION, expenseData.getDescr());
         values.put(EXPENSE_AMOUNT, expenseData.getAmount());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(EXPENSE_TABLE, null, values);
@@ -637,78 +828,111 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //==================== UPDAATE ITEM ========================================
     //UPDAATE MANAGER
-    public void updateManagers(Manager manager) {
+    public void updateManagers(ManagerTotal managerTotal) {
         ContentValues values = new ContentValues();
-        values.put(MANAGER_ID, manager.getManagerID());
-        values.put(MANAGER_NAME, manager.getManagerName());
-        values.put(MANAGER_PHONE, manager.getManagerPhone());
-        values.put(MANAGER_PASSWORD, manager.getManagerPassword());
+        values.put(MANAGER_ID, managerTotal.getManager().getManagerID());
+        values.put(MANAGER_NAME, managerTotal.getManager().getManagerName());
+        values.put(MANAGER_PHONE, managerTotal.getManager().getManagerPhone());
+        values.put(MANAGER_PASSWORD,managerTotal.getManager().getManagerPassword());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(MANAGER_TABLE, values, MANAGER_ID + " = ?", new String[]{String.valueOf(manager.getManagerID())});
+        db.update(MANAGER_TABLE, values, MANAGER_ID + " = ?", new String[]{String.valueOf(managerTotal.getManager().getManagerID())});
     }
 
     //UPDATE ACCOUNT
-    public void updateAccounts(Account account) {
+    public void updateAccounts(AccountTotal accountTotal) {
         ContentValues values = new ContentValues();
-        values.put(ACCOUNT_NAME, account.getAccName());
-        values.put(AC_MNG_ID, account.getMgId());
+        values.put(AC_MNG_ID, accountTotal.getAccount().getAccountId());
+        values.put(ACCOUNT_NAME, accountTotal.getAccount().getAccName());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(ACCOUNT_TABLE, values, ACCOUNT_ID + " = ?", new String[]{String.valueOf(account.getAccountId())});
+        db.update(ACCOUNT_TABLE, values, ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountTotal.getAccount().getAccountId())});
     }
 
     //UPDATE SUBACCOUNT
-    public void updateSubAccount(SubAccount subaccounts) {
+    public void updateSubAccount(SubAccountTotal subAccountTotal) {
         ContentValues values = new ContentValues();
-        values.put(SUBACCOUNT_NAME, subaccounts.getSubAccName());
-        values.put(SUB_MG_ID, subaccounts.getSubMgId());
-        values.put(SUB_AC_ID, subaccounts.getAccId());
+        values.put(SUBACCOUNT_NAME, subAccountTotal.getSubAccount().getSubAccName());
+        values.put(SUB_MG_ID, subAccountTotal.getSubAccount().getSubMgId());
+        values.put(SUB_AC_ID, subAccountTotal.getSubAccount().getsubAccId());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(SUBACCOUNT_TABLE, values, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subaccounts.getSubAccountId())});
+        db.update(SUBACCOUNT_TABLE, values, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subAccountTotal.getSubAccount().getsubAccId())});
     }
 
     //UPDATE CLIENT
 
-    public void updateClients(Client client) {
+    public void updateClients(ClientTotal clientTotal) {
         ContentValues values = new ContentValues();
-        values.put(CLIENT_NAME, client.getCltName());
-        values.put(CLIENT_MG_ID, client.getCltMgid());
-        values.put(CLIENT_AC_ID, client.getCltAccid());
-        values.put(CLIENT_SUBAC_ID, client.getCltSubId());
+        values.put(CLIENT_NAME, clientTotal.getClient().getCltName());
+        values.put(CLIENT_MG_ID, clientTotal.getClient().getCltMgid());
+        values.put(CLIENT_AC_ID, clientTotal.getClient().getCltAccid());
+        values.put(CLIENT_SUBAC_ID, clientTotal.getClient().getCltSubId());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(CLIENT_TABLE, values, CLIENT_ID + " = ?", new String[]{String.valueOf(client.getId())});
+        db.update(CLIENT_TABLE, values, CLIENT_ID + " = ?", new String[]{String.valueOf(clientTotal.getClient().getId())});
     }
+    //UPDATE RECEIPT
+
+//    public void updateAllReceipts(AllReceiptData allReceiptData) {
+//        ContentValues values = new ContentValues();
+//        values.put(RECEIPT_DATE, allReceiptData.getDate());
+//        values.put(RECEIPT_NO, allReceiptData.getRctNo());
+//        values.put(REC_MG_ID, allReceiptData.getMgId());
+//        values.put(REC_ACC_ID, allReceiptData.getAccId());
+//        values.put(REC_SUBAC_ID, allReceiptData.getSubId());
+//        values.put(REC_CLIENT_ID, allReceiptData.getClientId());
+//        values.put(REC_CLIENT_NAME, allReceiptData.getCltName());
+//        values.put(RECEIPT_AMOUNT, allReceiptData.getAmount());
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.update(RECEIPT_TABLE, values, RECEIPT_ID + " = ?", new String[]{String.valueOf(allReceiptData.getRctID())});
+//    }
 
     //UPDATE RECEIPT
 
-    public void updateReceipts(ReceiptData receipt) {
+    public void updateReceipts(ReceiptData receiptData) {
         ContentValues values = new ContentValues();
-        values.put(RECEIPT_DATE, receipt.getDate());
-        values.put(RECEIPT_NO, receipt.getRctNo());
-        values.put(REC_MG_ID, receipt.getMgId());
-        values.put(REC_SUB_NAME, receipt.getSubname());
-        values.put(REC_ACC_ID, receipt.getAccId());
-        values.put(REC_SUBAC_ID, receipt.getSubId());
-        values.put(REC_CLIENT_ID, receipt.getClientId());
-        values.put(RECEIPT_AMOUNT, receipt.getAmount());
+        values.put(RECEIPT_DATE, receiptData.getDate());
+        values.put(RECEIPT_NO, receiptData.getRctNo());
+        values.put(REC_MG_ID, receiptData.getMgId());
+        values.put(REC_ACC_ID, receiptData.getAccId());
+        values.put(REC_SUBAC_ID, receiptData.getSubId());
+        values.put(REC_CLIENT_ID, receiptData.getClientId());
+        values.put(REC_CLIENT_NAME, receiptData.getCltName());
+        values.put(RECEIPT_AMOUNT, receiptData.getAmount());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(RECEIPT_TABLE, values, RECEIPT_ID + " = ?", new String[]{String.valueOf(receipt.getRctID())});
+        db.update(RECEIPT_TABLE, values, RECEIPT_ID + " = ?", new String[]{String.valueOf(receiptData.getRctID())});
     }
 
     //UPDATE EXPENSE
 
-    public void updateExpenses(ExpenseData expense) {
+    public void updateExpense(ExpenseData expense) {
         ContentValues values = new ContentValues();
         values.put(EXPENSE_DATE, expense.getDate());
         values.put(EXPENSE_NO, expense.getExpNo());
         values.put(EXP_MG_ID, expense.getMgId());
-        values.put(EXP_SUB_NAME, expense.getSubname());
         values.put(EXP_ACC_ID, expense.getAccId());
         values.put(EXP_SUBAC_ID, expense.getSubId());
         values.put(EXP_CLIENT_ID, expense.getClientId());
+        values.put(EXP_CLIENT_NAME, expense.getCltName());
+        values.put(DESCRIPTION, expense.getDescr());
         values.put(EXPENSE_AMOUNT, expense.getAmount());
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(EXPENSE_TABLE, values, EXPENSE_ID + " = ?", new String[]{String.valueOf(expense.getExpID())});
     }
+    //UPDATE EXPENSE
+
+//    public void updateAllExpenses(AllExpensesData allExpensesData) {
+//        ContentValues values = new ContentValues();
+//        values.put(EXPENSE_DATE, allExpensesData.getDate());
+//        values.put(EXPENSE_NO, allExpensesData.getExpNo());
+//        values.put(EXP_MG_ID, allExpensesData.getMgId());
+//        values.put(EXP_ACC_ID, allExpensesData.getAccId());
+//        values.put(EXP_SUBAC_ID, allExpensesData.getSubId());
+//        values.put(EXP_CLIENT_ID, allExpensesData.getClientId());
+//        values.put(EXP_CLIENT_NAME, allExpensesData.getCltName());
+//        values.put(DESCRIPTION, allExpensesData.getDescr());
+//        values.put(EXPENSE_AMOUNT, allExpensesData.getAmount());
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.update(EXPENSE_TABLE, values, EXPENSE_ID + " = ?", new String[]{String.valueOf(allExpensesData.getExpID())});
+//    }
+
 //======================== SEARCH BY ID =======================================
 
     public Manager searchManagerByID(int mg_id){
@@ -799,7 +1023,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
             String name = cursor.getString(cursor.getColumnIndex(SUBACCOUNT_NAME));
             int sub_mg_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_MG_ID)));
             int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(SUB_AC_ID)));
-            return new SubAccount(subaccid, name, sub_mg_id, accId);
+            return new SubAccount(name, sub_mg_id, accId);
         }
         return null;
     }
@@ -829,13 +1053,13 @@ public class SqliteDatabase extends SQLiteOpenHelper {
             int receipt_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_ID)));
             String date = cursor.getString(cursor.getColumnIndex(RECEIPT_DATE));
             int rctNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(RECEIPT_NO)));
-            String subName = cursor.getString(cursor.getColumnIndex(REC_SUB_NAME));
             int rct_mg_id = cursor.getInt(cursor.getColumnIndex(REC_MG_ID));
             int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_ACC_ID)));
             int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_SUBAC_ID)));
             int clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(REC_CLIENT_ID)));
+            String cltName = cursor.getString(cursor.getColumnIndex(REC_CLIENT_NAME));
             double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(RECEIPT_AMOUNT)));
-            return new ReceiptData(receipt_id, date, rctNo, subName, rct_mg_id, accId, subaccId, clientId, amount);
+            return new ReceiptData(receipt_id, date, rctNo, rct_mg_id, accId, subaccId, clientId, cltName, amount);
         }
         return null;
     }
@@ -864,13 +1088,14 @@ public class SqliteDatabase extends SQLiteOpenHelper {
             int expense_id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_ID)));
             String date = cursor.getString(cursor.getColumnIndex(EXPENSE_DATE));
             int expNo = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXPENSE_NO)));
-            String subName = cursor.getString(cursor.getColumnIndex(EXP_SUB_NAME));
             int exp_mg_id = cursor.getInt(cursor.getColumnIndex(EXP_MG_ID));
             int accId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_ACC_ID)));
             int subaccId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_SUBAC_ID)));
             int clientId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(EXP_CLIENT_ID)));
+            String cltName = cursor.getString(cursor.getColumnIndex(EXP_CLIENT_NAME));
+            String descr = cursor.getString(cursor.getColumnIndex(DESCRIPTION));
             double amount = Double.parseDouble(cursor.getString(cursor.getColumnIndex(EXPENSE_AMOUNT)));
-            return new ExpenseData(expense_id, date, expNo, subName, exp_mg_id, accId, subaccId, clientId, amount);
+            return new ExpenseData(expense_id, date, expNo, exp_mg_id, accId, subaccId, clientId, cltName, descr, amount);
         }
         return null;
     }
@@ -887,8 +1112,18 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ACCOUNT_TABLE, ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountId)});
     }
+//
+//    //DELETE ACCOUNT
+//    public void deleteAccRct(int accountId) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete( CLIENT_TABLE + "," + RECEIPT_TABLE + " FROM " +
+//                CLIENT_TABLE + " INNER JOIN  " + RECEIPT_TABLE + " WHERE " +
+//                CLIENT_TABLE + "." + CLIENT_ID + "=" + RECEIPT_TABLE + "." +
+//                REC_CLIENT_ID + " AND " +
+//                CLIENT_TABLE + "." + CLIENT_ID + "=" + "2"");
+//    }
 
-    //DELETE SUBACCOUNT
+    //DELETE SU BACCOUNT
     public void deleteSubAccount(int subaccountsId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(SUBACCOUNT_TABLE, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subaccountsId)});

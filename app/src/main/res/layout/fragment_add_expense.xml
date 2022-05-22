@@ -1,174 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="0dp"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/lineaarDate"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:orientation="horizontal"
+        android:layout_marginTop="3dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
                 android:id="@+id/eDate"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="150dp"
-                android:clickable="false"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:hint="@string/birthday" />
-
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:ems="10"
+                android:hint="Date"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@+id/lineaarDate"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
                 android:id="@+id/eExpNo"
-                android:layout_width="85dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
-                android:hint="RctNo"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android">
-
-            <EditText
-                android:id="@+id/eClient"
-                android:layout_width="85dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:ems="10"
-                android:hint="ClientID"/>
+                android:hint="Expense No"/>
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
-
     <LinearLayout
+        android:id="@+id/linearClient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="0dp"
+        android:layout_below="@+id/lineaarDate"
+        android:layout_marginTop="3dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
-                android:id="@+id/eSubName"
-                android:layout_width="322dp"
+                android:id="@+id/eClientName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
                 android:hint="Subaccount Name"/>
-
         </com.google.android.material.textfield.TextInputLayout>
-
     </LinearLayout>
-
     <LinearLayout
+        android:id="@+id/linearSub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/linearClient"
         android:orientation="horizontal"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="3dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
-                android:id="@+id/eMgclid"
-                android:layout_width="107dp"
+                android:id="@+id/eDescription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
-                android:hint="OwnerID"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android">
-
-            <EditText
-                android:id="@+id/eAccId"
-                android:layout_width="107dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:ems="10"
-                android:hint="AccID"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android">
-
-            <EditText
-                android:id="@+id/eSubaccId"
-                android:layout_width="107dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:ems="10"
-                android:hint="SubaccID"/>
+                android:hint="Description"/>
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/linearAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/linearSub"
         android:orientation="horizontal"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="3dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
                 android:id="@+id/eAmount"
-                android:layout_width="322dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
@@ -183,18 +144,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/linearAmount"
         android:orientation="horizontal"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="3dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip">
-
-        <Button
-            android:id="@+id/btnInsert"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="Insert"
-            android:gravity="center"/>
 
         <Button
             android:id="@+id/btnClear"
@@ -205,5 +159,14 @@
             android:gravity="center"
             android:layout_marginLeft="10dp"/>
 
+        <Button
+            android:id="@+id/btnInsert"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Insert"
+            android:gravity="center"/>
+
+
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

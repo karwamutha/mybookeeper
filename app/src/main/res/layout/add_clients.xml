@@ -4,17 +4,17 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <EditText
-        android:id="@+id/entercltName"
+        android:id="@+id/enterCltName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter client name"
         android:textSize="12dp"
-        android:inputType="textVisiblePassword"
+        android:inputType="text|textCapWords"
         android:maxLines="1"
         android:layout_marginEnd="8dp"
         android:padding="12dp"/>
     <EditText
-        android:id="@+id/entercltMgid"
+        android:id="@+id/enterCltMgid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Manager ID"
@@ -25,7 +25,7 @@
         android:layout_marginEnd="8dp"
         android:padding="12dp"/>
     <EditText
-        android:id="@+id/entercltaccId"
+        android:id="@+id/enterCltAccId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="AccId"
@@ -36,7 +36,7 @@
         android:layout_marginEnd="8dp"
         android:padding="12dp"/>
     <EditText
-        android:id="@+id/entercltSubId"
+        android:id="@+id/enterCltSubId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="SubaccId"

@@ -45,14 +45,13 @@ public class HomeFragment extends Fragment {
         RelativeLayout adminButton = view.findViewById(R.id.admin_button);
         RelativeLayout loginButton = view.findViewById(R.id.login_btn);
         RelativeLayout passwordButton = view.findViewById(R.id.btnChangePassword);
+        RelativeLayout openButton = view.findViewById(R.id.btnOpen);
 
         mDatabase = new SqliteDatabase(getActivity());
         ePhone = view.findViewById(R.id.edPhone);
         ePassword = view.findViewById(R.id.edPassword);
         eAttempts = view.findViewById(R.id.edAttempts);
         ePhone.setText("0724895791");
-        buttonOpen = view.findViewById(R.id.btnOpen);
-
 
         Calendar calendar = Calendar.getInstance();
         // Get the current date
@@ -94,14 +93,12 @@ public class HomeFragment extends Fragment {
                 args.putString("pWordFromHome", ePassword.getText().toString());
                 args.putInt("mngIdFromHome", manager.getManagerID());
                 args.putString("mngNameFromHome", manager.getManagerName());
-                args.putString("startDate", firstDayOfMonthStr);
-                args.putString("endDate", lastDayOfMonthStr);
                 NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_HomeFragment_to_ManagerReceiptsFragment, args);
             }
         });
 
-        buttonOpen.setOnClickListener(v -> {
+        openButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
                 NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_HomeFragment_to_ManagerReceiptsFragment, args);
