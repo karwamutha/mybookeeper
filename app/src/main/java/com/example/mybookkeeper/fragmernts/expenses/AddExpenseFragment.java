@@ -27,12 +27,11 @@ public class AddExpenseFragment extends Fragment {
     EditText eExpNo, eDate, eSubName, eCltName, eDescr,eAmount;
     Button buttonEnter;
     View buttonClear;
-
-    String nameFromDialog;
-    int mngIdFromDialog;
-    int subAccIdFromDialog;
-    int acntIdFromDialog;
-    int clientIDFromDialog;
+    String clientNameFFromDialog;
+    int mngIdFromFFromDialog;
+    int acntIdFFromDialog;
+    int subAccIdFFromDialog;
+    int clientIDFFromDialog;
 
     public static AddExpenseFragment getInstance(int clientID) {
         AddExpenseFragment r = new AddExpenseFragment();
@@ -63,18 +62,18 @@ public class AddExpenseFragment extends Fragment {
         buttonClear = view.findViewById(R.id.btnClear);
 
         if (getArguments() != null) {
-            nameFromDialog = getArguments().getString("nameFromDialog");
-            mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-            acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-            subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-            clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SubAccount Expense");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
+            clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+            mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+            acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Add Receipt for ");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO Expense SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED Expense NOT FOUND");
         }
-        eCltName.setText(nameFromDialog);
+        eCltName.setText(clientNameFFromDialog);
 //        eDescr.setText(nameFromDialog);
 
 
@@ -113,16 +112,16 @@ public class AddExpenseFragment extends Fragment {
             public void onClick(View view) {
                 final String date = eDate.getText().toString();
                 final int expNo = Integer.parseInt(eExpNo.getText().toString());
-                nameFromDialog = getArguments().getString("nameFromDialog");
-                mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-                acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-                subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-                clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
-                final int expMngId= mngIdFromDialog;
-                final int expAccId= acntIdFromDialog;
-                final int expSubaccId= subAccIdFromDialog;
-                final int expClientid = clientIDFromDialog;
-                final String expCltName = nameFromDialog;
+                clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+                mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+                acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+                clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
+                final int expMngId= mngIdFromFFromDialog;
+                final int expAccId= acntIdFFromDialog;
+                final int expSubaccId= subAccIdFFromDialog;
+                final int expClientid = clientIDFFromDialog;
+                final String expCltName = clientNameFFromDialog;
                 final String descr = eDescr.getText().toString();
                 final double amount = Double.parseDouble(eAmount.getText().toString());
                 //Toast.makeText(getActivity(), amount+"", Toast.LENGTH_LONG).show();

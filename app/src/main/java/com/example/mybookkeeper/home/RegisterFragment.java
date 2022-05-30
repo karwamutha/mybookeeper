@@ -86,7 +86,7 @@ public class RegisterFragment extends Fragment {
             } else {
                 String newPassword = eNewPassword.getText().toString();
                 newManager.setManagerPassword(newPassword);
-//                mDatabase.updateManagers(newManager);
+                mDatabase.updateManagers(newManager); // this was the commented line which updates DB
                 Bundle args = new Bundle();
                 args.putInt("mngIdFromRegister", mngIdFromHomePwd);
                 args.putString("mngNameFromRegister", eName.getText().toString());

@@ -92,7 +92,7 @@ public class ExpenseData {
     public String getDescr() {
         return descr;
     }
-    public void setDescr(String descr) { this.cltName = descr; }
+    public void setDescr(String descr) { this.descr = descr; }
 
     public double getAmount() {
         return amt;

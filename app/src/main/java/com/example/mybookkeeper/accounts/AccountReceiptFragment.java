@@ -292,8 +292,8 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
             NavHostFragment.findNavController(AccountReceiptFragment.this)
                     .navigate(R.id.action_AccountReceiptsFragment_to_SubAccountReceiptFragment, args);
         }else if (chooser.equals("FromNewPwd")) {
-            args.putInt("accIdFromAccs", account.getAccountId());
-            args.putString("accNameFromAccs", account.getAccName());
+            args.putInt("accIdFromAccs", accountTotal.getAccount().getAccountId());
+            args.putString("accNameFromAccs", accountTotal.getAccount().getAccName());
             args.putInt("mngIdFromAccs", mngIdFromNewPwd);
             args.putString("btnState", "showeButton");
             args.putString("originPage", "FromAccsPwd");

@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
 import com.example.mybookkeeper.SqliteDatabase;
-import com.example.mybookkeeper.clients.Client;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,12 +30,11 @@ public class AddReceiptFragment extends Fragment {
     Button buttonEnter;
     View buttonClear;
 
-    String nameFromDialog;
-    int mngIdFromDialog;
-    int subAccIdFromDialog;
-    int acntIdFromDialog;
-    int clientIDFromDialog;
-    Client client = null;
+    String clientNameFFromDialog;
+    int mngIdFromFFromDialog;
+    int acntIdFFromDialog;
+    int subAccIdFFromDialog;
+    int clientIDFFromDialog;
 
     public static AddReceiptFragment getInstance(int clientID) {
         AddReceiptFragment r = new AddReceiptFragment();
@@ -67,20 +65,18 @@ public class AddReceiptFragment extends Fragment {
         buttonClear = view.findViewById(R.id.btnClear);
 
         if (getArguments() != null) {
-            nameFromDialog = getArguments().getString("nameFromDialog");
-            mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-            acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-            subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-            clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Add Receipt for ");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
+            clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+            mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+            acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt for ");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO RECEIPT SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED RECEIPT NOT FOUND");
         }
-        eCltName.setText(nameFromDialog);
-        eSubName.setText(nameFromDialog);
-
+        eCltName.setText(clientNameFFromDialog);
 
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
@@ -117,23 +113,23 @@ public class AddReceiptFragment extends Fragment {
             public void onClick(View view) {
                 final String date = eDate.getText().toString();
                 final int rctNo = Integer.parseInt(eRctNo.getText().toString());
-                nameFromDialog = getArguments().getString("nameFromDialog");
-                mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-                acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-                subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-                clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
-                final String cltName = nameFromDialog;
-                final int rctMngId= mngIdFromDialog;
-                final int rctAccId= acntIdFromDialog;
-                final int rctSubaccId= subAccIdFromDialog;
-                final int rctClientid = clientIDFromDialog;
+                clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+                mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+                acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+                clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
+                final int rctMngId= mngIdFromFFromDialog;
+                final int rctAccId= acntIdFFromDialog;
+                final int rctSubaccId= subAccIdFFromDialog;
+                final int rctClientid = clientIDFFromDialog;
+                final String rctCltName = clientNameFFromDialog;
                 final double amount = Double.parseDouble(eAmount.getText().toString());
                 //Toast.makeText(getActivity(), amount+"", Toast.LENGTH_LONG).show();
                 if (TextUtils.isEmpty("" + amount)) {
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
 
-                    ReceiptData newReceipt = new ReceiptData(date, rctNo, rctMngId, rctAccId, rctSubaccId, rctClientid, cltName, amount);
+                    ReceiptData newReceipt = new ReceiptData(date, rctNo, rctMngId, rctAccId, rctSubaccId, rctClientid, rctCltName, amount);
                     mDatabase.addReceipt(newReceipt);
                     Toast.makeText(getActivity(), "Success: Receipt saved", Toast.LENGTH_SHORT).show();
                     eRctNo.setText(mDatabase.getNextReceiptID() + "");

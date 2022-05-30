@@ -36,11 +36,13 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
     private SqliteDatabase mDatabase;
     RecyclerView ExpenseView;
     EditText eExpNo, eAmount;
-    String nameFromDialog;
-    int mngIdFromDialog;
-    int acntIdFromDialog;
-    int subAccIdFromDialog;
-    int clientIDFromDialog;
+
+    String clientNameFFromDialog;
+    int mngIdFromFFromDialog;
+    int acntIdFFromDialog;
+    int subAccIdFFromDialog;
+    int clientIDFFromDialog;
+
     EditText dateFrom, dateTo;
     String startDate, endDate;
     public static ExpenseDetailFragment getInstance(int clientID){
@@ -147,15 +149,15 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
             }
         });
         if (getArguments() != null) {
-            nameFromDialog = getArguments().getString("nameFromDialog");
-            mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-            acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-            subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-            clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
+            clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+            mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+            acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Expense Details for ");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
 
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO EXPENSES SELECTED");
@@ -167,7 +169,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
         return v;
     }
     public void refresh(){
-        ArrayList<ExpenseData> allExpenses = mDatabase.listExpenses(clientIDFromDialog);
+        ArrayList<ExpenseData> allExpenses = mDatabase.listExpenses(clientIDFFromDialog);
         if (allExpenses.size() > 0) {
             ExpenseView.setVisibility(View.VISIBLE);
             ExpenseDetailAdapter mAdapter = new ExpenseDetailAdapter(getActivity(),  this, allExpenses, getArguments().getInt("clientIDFromDialog"));
@@ -224,7 +226,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
 
     }
 
-//    private void addTaskDialog() {
+    //    private void addTaskDialog() {
 //        LayoutInflater inflater = LayoutInflater.from(getActivity());
 //        View subView = inflater.inflate(R.layout.expenses_list_layout, null);
 //        final EditText dateField = subView.findViewById(R.id.eDate);

@@ -128,20 +128,20 @@ public class TransactionDialogFragment extends Fragment {
             }
         });
         if (getArguments() != null) {
-            subAccNameFromClients = getArguments().getString("subAccNameFromClients");
+            clientNameFromClients = getArguments().getString("clientNameFromClients");
             mngIdFromFromClients = getArguments().getInt("mngIdFromFromClients");
             acntIdFromClients = getArguments().getInt("acntIdFromClients");
             subAccIdFromClients = getArguments().getInt("subAccIdFromClients");
-            clientNameFromClients = getArguments().getString("clientNameFromClients");
-            //tvClient.setText(clientNameFromClients);
             clientIDFromClients = getArguments().getInt("clientIDFromClients");
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SUBACC: " + subAccNameFromClients);
+//            tvClient.setText(clientNameFromClients);
+            clientIDFromClients = getArguments().getInt("clientIDFromClients");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SUBACC: " + "Activities for");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("CLIENT: " + clientNameFromClients);
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACTIVITY SELECTED");
         }
-            startDate = firstDayOfMonthStr;
-            endDate = lastDayOfMonthStr;
+        startDate = firstDayOfMonthStr;
+        endDate = lastDayOfMonthStr;
 //            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Transactions for: ");
 //            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromClients);
 
@@ -155,12 +155,13 @@ public class TransactionDialogFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putString("subAccNameFromGallety", subAccNameFromClients);
-                args.putInt("mngIdFromFFromGallety", mngIdFromFromClients);
-                args.putInt("acntIdFFromGallety", acntIdFromClients);
-                args.putInt("subAccIdFFromGallety", subAccIdFromClients);
-                args.putString("clientNameFFromGallety", clientNameFromClients);
-                args.putInt("clientIDFFromGallety", clientIDFromClients);                NavHostFragment.findNavController(TransactionDialogFragment.this)
+                args.putString("subAccNameFromDialog", subAccNameFromClients);
+                args.putInt("mngIdFromFFromDialog", mngIdFromFromClients);
+                args.putInt("acntIdFFromDialog", acntIdFromClients);
+                args.putInt("subAccIdFFromDialog", subAccIdFromClients);
+                args.putString("clientNameFFromDialog", clientNameFromClients);
+                args.putInt("clientIDFFromDialog", clientIDFromClients);
+                NavHostFragment.findNavController(TransactionDialogFragment.this)
                         .navigate(R.id.action_TransactionsFragment_to_AddReceiptFeagment, args);
             }
         });
@@ -168,14 +169,12 @@ public class TransactionDialogFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putString("subAccNameFromGallety", subAccNameFromClients);
-                args.putInt("mngIdFromFFromGallety", mngIdFromFromClients);
-                args.putInt("acntIdFFromGallety", acntIdFromClients);
-                args.putInt("subAccIdFFromGallety", subAccIdFromClients);
-                args.putString("clientNameFFromGallety", clientNameFromClients);
-                args.putInt("clientIDFFromGallety", clientIDFromClients);
-                args.putString("startDate", dateFrom.getText().toString());
-                args.putString("endDate", dateTo.getText().toString());
+                args.putString("subAccNameFromDialog", subAccNameFromClients);
+                args.putInt("mngIdFromFFromDialog", mngIdFromFromClients);
+                args.putInt("acntIdFFromDialog", acntIdFromClients);
+                args.putInt("subAccIdFFromDialog", subAccIdFromClients);
+                args.putString("clientNameFFromDialog", clientNameFromClients);
+                args.putInt("clientIDFFromDialog", clientIDFromClients);
                 NavHostFragment.findNavController(TransactionDialogFragment.this)
                         .navigate(R.id.action_TransactionsFragment_to_AddExpenseFragment, args);
             }
@@ -184,12 +183,12 @@ public class TransactionDialogFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putString("subAccNameFromGallety", subAccNameFromClients);
-                args.putInt("mngIdFromFFromGallety", mngIdFromFromClients);
-                args.putInt("acntIdFFromGallety", acntIdFromClients);
-                args.putInt("subAccIdFFromGallety", subAccIdFromClients);
-                args.putString("clientNameFFromGallety", clientNameFromClients);
-                args.putInt("clientIDFFromGallety", clientIDFromClients);
+                args.putString("subAccNameFromDialog", subAccNameFromClients);
+                args.putInt("mngIdFromFFromDialog", mngIdFromFromClients);
+                args.putInt("acntIdFFromDialog", acntIdFromClients);
+                args.putInt("subAccIdFFromDialog", subAccIdFromClients);
+                args.putString("clientNameFFromDialog", clientNameFromClients);
+                args.putInt("clientIDFFromDialog", clientIDFromClients);
                 args.putString("startDate", dateFrom.getText().toString());
                 args.putString("endDate", dateTo.getText().toString());
                 NavHostFragment.findNavController(TransactionDialogFragment.this)
@@ -200,12 +199,12 @@ public class TransactionDialogFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putString("subAccNameFromGallety", subAccNameFromClients);
-                args.putInt("mngIdFromFFromGallety", mngIdFromFromClients);
-                args.putInt("acntIdFFromGallety", acntIdFromClients);
-                args.putInt("subAccIdFFromGallety", subAccIdFromClients);
-                args.putString("clientNameFFromGallety", clientNameFromClients);
-                args.putInt("clientIDFFromGallety", clientIDFromClients);
+                args.putString("subAccNameFromDialog", subAccNameFromClients);
+                args.putInt("mngIdFromFFromDialog", mngIdFromFromClients);
+                args.putInt("acntIdFFromDialog", acntIdFromClients);
+                args.putInt("subAccIdFFromDialog", subAccIdFromClients);
+                args.putString("clientNameFFromDialog", clientNameFromClients);
+                args.putInt("clientIDFFromDialog", clientIDFromClients);
                 args.putString("startDate", dateFrom.getText().toString());
                 args.putString("endDate", dateTo.getText().toString());
                 NavHostFragment.findNavController(TransactionDialogFragment.this)

@@ -230,10 +230,13 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //FETCHING ALL SUBACCOUNTS
     public ArrayList<SubAccount> listSubAccounts(int accId) {
+        ArrayList<SubAccount> storeSubAccounts = new ArrayList<>();
+
+
+
         String sql = "select * from " + SUBACCOUNT_TABLE + " WHERE " + SUB_AC_ID + " like '" +
                 accId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<SubAccount> storeSubAccounts = new ArrayList<>();
         Cursor cursor = db.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             do {
@@ -246,6 +249,9 @@ public class SqliteDatabase extends SQLiteOpenHelper {
             while (cursor.moveToNext());
         }
         cursor.close();
+
+
+
         return storeSubAccounts;
     }
 
@@ -272,7 +278,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ReceiptData> listReceipts(String startDate, String endDate, int clientId) {
+    public ArrayList<ReceiptData> listReceipts(int clientId) {
         String sql = "select * from " + RECEIPT_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -836,6 +842,16 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         values.put(MANAGER_PASSWORD,managerTotal.getManager().getManagerPassword());
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(MANAGER_TABLE, values, MANAGER_ID + " = ?", new String[]{String.valueOf(managerTotal.getManager().getManagerID())});
+    }
+
+    public void updateManagers(Manager managerTotal) {
+        ContentValues values = new ContentValues();
+        values.put(MANAGER_ID, managerTotal.getManagerID());
+        values.put(MANAGER_NAME, managerTotal.getManagerName());
+        values.put(MANAGER_PHONE, managerTotal.getManagerPhone());
+        values.put(MANAGER_PASSWORD,managerTotal.getManagerPassword());
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(MANAGER_TABLE, values, MANAGER_ID + " = ?", new String[]{String.valueOf(managerTotal.getManagerID())});
     }
 
     //UPDATE ACCOUNT

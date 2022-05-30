@@ -35,16 +35,16 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
 
     private SqliteDatabase mDatabase;
     RecyclerView ReceiptView;
-    ReceiptData ReceiptData;
-    EditText eRctNo, eAmount;
-    String nameFromDialog;
-    int mngIdFromDialog;
-    int acntIdFromDialog;
-    int subAccIdFromDialog;
-    int clientIDFromDialog;
+    EditText eExpNo, eAmount;
+
+    String clientNameFFromDialog;
+    int mngIdFromFFromDialog;
+    int acntIdFFromDialog;
+    int subAccIdFFromDialog;
+    int clientIDFFromDialog;
+
     EditText dateFrom, dateTo;
     String startDate, endDate;
-
     public static ReceiptDetailFragment getInstance(int clientID){
         ReceiptDetailFragment r = new ReceiptDetailFragment();
         Bundle args = new Bundle();
@@ -62,7 +62,7 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ReceiptData receiptData = null;
+        ReceiptData ReceiptData = null;
         Bundle args = getArguments();
 
         View v = inflater.inflate(R.layout.fragment_receipt_details, container, false);
@@ -72,7 +72,7 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
         ReceiptView.setLayoutManager(linearLayoutManager);
         ReceiptView.setHasFixedSize(true);
         mDatabase = new SqliteDatabase(getActivity());
-        eRctNo = v.findViewById(R.id.eRctNo);
+        eExpNo = v.findViewById(R.id.eExpNo);
         eAmount = v.findViewById(R.id.eAmount);
         dateFrom = v.findViewById(R.id.edDateFrom);
         dateTo = v.findViewById(R.id.edDateTo);
@@ -148,30 +148,28 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
                 }
             }
         });
-        //=========================
         if (getArguments() != null) {
-            nameFromDialog = getArguments().getString("nameFromDialog");
-            mngIdFromDialog = getArguments().getInt("mngIdFromDialog");
-            acntIdFromDialog = getArguments().getInt("acntIdFromDialog");
-            subAccIdFromDialog = getArguments().getInt("subAccIdFromDialog");;
-            clientIDFromDialog = getArguments().getInt("clientIDFromDialog");
+            clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
+            mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
+            acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt Details for ");
-            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(nameFromDialog);
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
 
         }else{
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ReceiptS SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ReceiptS NOT FOUND");
         }
+        refresh();
         dateFrom.setText(startDate);
         dateTo.setText(endDate);
-        refresh();
         return v;
     }
     public void refresh(){
-
-        ArrayList<ReceiptData> allReceipts = mDatabase.listReceipts(startDate, endDate, clientIDFromDialog);
+        ArrayList<ReceiptData> allReceipts = mDatabase.listReceipts(clientIDFFromDialog);
         if (allReceipts.size() > 0) {
             ReceiptView.setVisibility(View.VISIBLE);
             ReceiptDetailAdapter mAdapter = new ReceiptDetailAdapter(getActivity(),  this, allReceipts, getArguments().getInt("clientIDFromDialog"));
@@ -228,9 +226,9 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
 
     }
 
-//        private void addTaskDialog() {
+    //    private void addTaskDialog() {
 //        LayoutInflater inflater = LayoutInflater.from(getActivity());
-//        View subView = inflater.inflate(R.layout.receipt_list_layout, null);
+//        View subView = inflater.inflate(R.layout.expenses_list_layout, null);
 //        final EditText dateField = subView.findViewById(R.id.eDate);
 //        final EditText rctnoField = subView.findViewById(R.id.eRctNo);
 ////        final EditText subField = subView.findViewById(R.id.eSubName);
@@ -248,7 +246,7 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
 //            public void onClick(DialogInterface dialog, int which) {
 //                ReceiptData = mDatabase.searchReceiptByID(Integer.parseInt(mngField.getText().toString()));
 //                final String date = dateField.getText().toString();
-//                finReceiptexpNo = Integer.parseInt(ReceiptData.getExpNo()+"");
+//                final int expNo = Integer.parseInt(ReceiptData.getExpNo()+"");
 //                final String subname = subField.getText().toString();
 //                final int mngId = Integer.parseInt(ReceiptData.getMgId()+"");
 //                final int accId = Integer.parseInt(ReceiptData.getAccId()+"");
@@ -280,4 +278,5 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
             mDatabase.close();
         }
     }
+
 }
