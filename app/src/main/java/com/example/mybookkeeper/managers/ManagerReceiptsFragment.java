@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
 import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
@@ -80,9 +81,11 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
 
         if (getArguments() != null) {
             mngIdFromHome = getArguments().getInt("mngIdFromHome");
-        }else{
-//            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("MANAGERS LIST");
 //            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
+        }else{
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
+            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
         }
 
         refresh();
