@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
 import com.example.mybookkeeper.managers.RefreshableFragment;
@@ -27,13 +27,13 @@ import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ExpenseDetailFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView ExpenseView;
     EditText eExpNo, eAmount;
 
@@ -45,7 +45,8 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
 
     EditText dateFrom, dateTo;
     String startDate, endDate;
-    public static ExpenseDetailFragment getInstance(int clientID){
+
+    public static ExpenseDetailFragment getInstance(int clientID) {
         ExpenseDetailFragment r = new ExpenseDetailFragment();
         Bundle args = new Bundle();
         args.putInt("ClientID", clientID);
@@ -71,7 +72,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ExpenseView.setLayoutManager(linearLayoutManager);
         ExpenseView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eExpNo = v.findViewById(R.id.eExpNo);
         eAmount = v.findViewById(R.id.eAmount);
         dateFrom = v.findViewById(R.id.edDateFrom);
@@ -152,14 +153,15 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
             clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
             mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
             acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
+            ;
             clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Expense Details for ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
 
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO EXPENSES SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED EXPENSES NOT FOUND");
         }
@@ -168,17 +170,30 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
         dateTo.setText(endDate);
         return v;
     }
-    public void refresh(){
-        ArrayList<ExpenseData> allExpenses = mDatabase.listExpenses(clientIDFFromDialog);
-        if (allExpenses.size() > 0) {
-            ExpenseView.setVisibility(View.VISIBLE);
-            ExpenseDetailAdapter mAdapter = new ExpenseDetailAdapter(getActivity(),  this, allExpenses, getArguments().getInt("clientIDFromDialog"));
-            ExpenseView.setAdapter(mAdapter);
-        }
-        else {
-            ExpenseView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-        }
+
+    public void refresh() {
+        showDialog();
+        UIDataStore.UiData<List<ExpenseData>> listUiData = mDatabase.listExpenses(clientIDFFromDialog);
+        listUiData.observe(getViewLifecycleOwner(), listResult -> {
+            List<ExpenseData> allExpenses = listResult.getResult();
+            if (allExpenses.size() > 0) {
+                ExpenseView.setVisibility(View.VISIBLE);
+                ExpenseDetailAdapter mAdapter = new ExpenseDetailAdapter(getActivity(), ExpenseDetailFragment.this, allExpenses, getArguments().getInt("clientIDFromDialog"));
+                ExpenseView.setAdapter(mAdapter);
+            } else {
+                ExpenseView.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
+            }
+            closeDialog();
+        });
+    }
+
+    private void showDialog() {
+
+    }
+
+    private void closeDialog() {
+
     }
 
     @Override

@@ -11,33 +11,36 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccountReceiptAdapter.ReceiptDataViewHolder>
         implements Filterable {
     private final RefreshableFragment refreshable;
-    private ArrayList<SubAccountTotal> SubAccountReceiptAdapter;
-    private  TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+    private List<SubAccountTotal> SubAccountReceiptAdapter;
+    private TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
     private Context context;
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     int mngId;
+    private AlertDialog alertDialog;
 //    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
-    public SubAccountReceiptAdapter(Context context, RefreshableFragment refreshable, ArrayList<SubAccountTotal> SubAccountReceiptAdapter, int mngId) {
+    public SubAccountReceiptAdapter(Context context, RefreshableFragment refreshable, List<SubAccountTotal> SubAccountReceiptAdapter, int mngId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.SubAccountReceiptAdapter = SubAccountReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -75,25 +78,36 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + subAccountTotal.getSubAccount().getSubAccName()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + subAccountTotal.getSubAccount().getSubAccName() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId());
-                        mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId());
+                        showDialog(alertDialog);
+                        mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId())
+                                .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         });
+    }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
     }
 
     public Filter getFilter() {
@@ -133,13 +147,13 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
         final EditText accIdField = subView.findViewById(R.id.entersacAccId);
         if (subAccountTotal != null) {
             nameField.setText(subAccountTotal.getSubAccount().getSubAccName());
-            mgidField.setText(subAccountTotal.getSubAccount().getSubMgId()+"");
-            accIdField.setText(subAccountTotal.getSubAccount().getsubAccId()+"");
+            mgidField.setText(subAccountTotal.getSubAccount().getSubMgId() + "");
+            accIdField.setText(subAccountTotal.getSubAccount().getsubAccId() + "");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit subaccount");
         builder.setView(subView);
-        builder.create();
+        AlertDialog alertDialog = builder.create();
         builder.setPositiveButton("EDIT SUBACCOUNT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -152,7 +166,9 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                     subAccountTotal.getSubAccount().setSubAccName(name);
                     subAccountTotal.getSubAccount().setSubMgId(mgid);
                     subAccountTotal.getSubAccount().setsubAccId(accId);
-                    mDatabase.updateSubAccount(subAccountTotal);
+                    showDialog(alertDialog);
+                    mDatabase.updateSubAccount(subAccountTotal)
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }

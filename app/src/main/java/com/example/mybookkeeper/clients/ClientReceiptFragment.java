@@ -14,15 +14,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
@@ -32,13 +33,13 @@ import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ClientReceiptFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView ClientReceiptView;
     EditText eRctNo, eAmount;
 
@@ -46,11 +47,12 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
     String startDate, endDate;
 
     String subAccNameFromSubaccs;
-    int mngIdFromSubacc;;
+    int mngIdFromSubacc;
+    ;
     int acntIdFromSubaccs;
     int subAccIdFromSubacc;
 
-    public static ClientReceiptFragment getInstance(int accId){
+    public static ClientReceiptFragment getInstance(int accId) {
         ClientReceiptFragment r = new ClientReceiptFragment();
         Bundle args = new Bundle();
 //        args.putInt("ClientID", clientID);
@@ -76,7 +78,7 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ClientReceiptView.setLayoutManager(linearLayoutManager);
         ClientReceiptView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eRctNo = view.findViewById(R.id.eRctNo);
         eAmount = view.findViewById(R.id.eAmount);
 
@@ -169,7 +171,7 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Client List for Subaccount ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(subAccNameFromSubaccs);
 
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO Client SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED Client NOT FOUND");
         }
@@ -188,19 +190,28 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         });
         return view;
     }
-    public void refresh(){
-        //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
-        ArrayList<ClientTotal> allReceipts = mDatabase.listClientTotalReceipts(startDate, endDate, mngIdFromSubacc);
-        if (allReceipts.size() > 0) {
-            ClientReceiptView.setVisibility(View.VISIBLE);
-            ClientReceiptAdapter mAdapter = new ClientReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("cltSubIdFromSub"));
-            ClientReceiptView.setAdapter(mAdapter);
 
-        }
-        else {
-            ClientReceiptView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "There is no Client in the database. Start adding now", Toast.LENGTH_LONG).show();
-        }
+    public void refresh() {
+        showDialog();
+        //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
+        UIDataStore.UiData<List<ClientTotal>> totalReceipts =
+                mDatabase.listClientTotalReceipts(startDate, endDate, mngIdFromSubacc);
+        totalReceipts.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<ClientTotal>>>() {
+            @Override
+            public void onChanged(UIDataStore.Result<List<ClientTotal>> listResult) {
+                List<ClientTotal> allReceipts = listResult.getResult();
+                if (allReceipts.size() > 0) {
+                    ClientReceiptView.setVisibility(View.VISIBLE);
+                    ClientReceiptAdapter mAdapter = new ClientReceiptAdapter(getActivity(), ClientReceiptFragment.this, allReceipts, getArguments().getInt("cltSubIdFromSub"));
+                    ClientReceiptView.setAdapter(mAdapter);
+
+                } else {
+                    ClientReceiptView.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "There is no Client in the database. Start adding now", Toast.LENGTH_LONG).show();
+                }
+                closeDialog();
+            }
+        });
     }
 
     @Override
@@ -263,9 +274,9 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         final EditText mgidField = subView.findViewById(R.id.enterCltMgid);
         final EditText accField = subView.findViewById(R.id.enterCltAccId);
         final EditText subAccField = subView.findViewById(R.id.enterCltSubId);
-        mgidField.setText(mngIdFromSubacc+"");
-        accField.setText(acntIdFromSubaccs+"");
-        subAccField.setText(subAccIdFromSubacc+"");
+        mgidField.setText(mngIdFromSubacc + "");
+        accField.setText(acntIdFromSubaccs + "");
+        subAccField.setText(subAccIdFromSubacc + "");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add new CLIENT");
         builder.setView(subView);
@@ -281,7 +292,8 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     Client newClient = new Client(subacNme, mngid, accid, suAaccid);
-                    mDatabase.addClients(newClient);
+                    showDialog();
+                    mDatabase.addClients(newClient).observe(getViewLifecycleOwner(), r -> closeDialog());
                     refresh();
                 }
             }
@@ -293,6 +305,15 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         });
         builder.show();
     }
+
+    private void showDialog() {
+
+    }
+
+    private void closeDialog() {
+
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -321,7 +342,7 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
 //
 //import com.example.mybookkeeper.MainActivity;
 //import com.example.mybookkeeper.R;
-//import com.example.mybookkeeper.SqliteDatabase;
+//import com.example.mybookkeeper.data.UIDataStore;
 //import com.example.mybookkeeper.accounts.Account;
 //import com.example.mybookkeeper.accounts.AccountTotal;
 //import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
@@ -376,7 +397,7 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 //        ClientReceiptView.setLayoutManager(linearLayoutManager);
 //        ClientReceiptView.setHasFixedSize(true);
-//        mDatabase = new SqliteDatabase(getActivity());
+//        mDatabase = new SqliteDatabase(context);
 //        eRctNo = view.findViewById(R.id.eRctNo);
 //        eAmount = view.findViewById(R.id.eAmount);
 //

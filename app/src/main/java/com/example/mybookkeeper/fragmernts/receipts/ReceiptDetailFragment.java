@@ -10,15 +10,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
 import com.example.mybookkeeper.managers.RefreshableFragment;
@@ -27,13 +28,13 @@ import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ReceiptDetailFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView ReceiptView;
     EditText eExpNo, eAmount;
 
@@ -45,7 +46,8 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
 
     EditText dateFrom, dateTo;
     String startDate, endDate;
-    public static ReceiptDetailFragment getInstance(int clientID){
+
+    public static ReceiptDetailFragment getInstance(int clientID) {
         ReceiptDetailFragment r = new ReceiptDetailFragment();
         Bundle args = new Bundle();
         args.putInt("ClientID", clientID);
@@ -71,7 +73,7 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ReceiptView.setLayoutManager(linearLayoutManager);
         ReceiptView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eExpNo = v.findViewById(R.id.eExpNo);
         eAmount = v.findViewById(R.id.eAmount);
         dateFrom = v.findViewById(R.id.edDateFrom);
@@ -152,14 +154,15 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
             clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
             mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
             acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
+            ;
             clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt Details for ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
 
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ReceiptS SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ReceiptS NOT FOUND");
         }
@@ -168,17 +171,33 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
         dateTo.setText(endDate);
         return v;
     }
-    public void refresh(){
-        ArrayList<ReceiptData> allReceipts = mDatabase.listReceipts(clientIDFFromDialog);
-        if (allReceipts.size() > 0) {
-            ReceiptView.setVisibility(View.VISIBLE);
-            ReceiptDetailAdapter mAdapter = new ReceiptDetailAdapter(getActivity(),  this, allReceipts, getArguments().getInt("clientIDFromDialog"));
-            ReceiptView.setAdapter(mAdapter);
-        }
-        else {
-            ReceiptView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-        }
+
+    public void refresh() {
+        showDialog();
+        UIDataStore.UiData<List<ReceiptData>> listUiData = mDatabase.listReceipts(clientIDFFromDialog);
+        listUiData.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<ReceiptData>>>() {
+            @Override
+            public void onChanged(UIDataStore.Result<List<ReceiptData>> listResult) {
+                List<ReceiptData> allReceipts = listResult.getResult();
+                if (allReceipts != null && allReceipts.size() > 0) {
+                    ReceiptView.setVisibility(View.VISIBLE);
+                    ReceiptDetailAdapter mAdapter = new ReceiptDetailAdapter(getActivity(), ReceiptDetailFragment.this, allReceipts, getArguments().getInt("clientIDFromDialog"));
+                    ReceiptView.setAdapter(mAdapter);
+                } else {
+                    ReceiptView.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
+                }
+                closeDialog();
+            }
+        });
+    }
+
+    private void closeDialog() {
+
+    }
+
+    private void showDialog() {
+
     }
 
     @Override

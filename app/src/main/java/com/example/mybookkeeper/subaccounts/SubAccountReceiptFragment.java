@@ -14,16 +14,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
@@ -31,25 +32,26 @@ import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class SubAccountReceiptFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView SubAccountReceiptView;
     EditText eAmount;
     EditText dateFrom, dateTo;
     String startDate, endDate;
 
     String chooser;
-    String accNameFromAccs;;
+    String accNameFromAccs;
+    ;
     int mngIdFromAccs;
     int accIdFromAccs;
     Button buttonAdd;
 
-    public static SubAccountReceiptFragment getInstance(int accId){
+    public static SubAccountReceiptFragment getInstance(int accId) {
         SubAccountReceiptFragment r = new SubAccountReceiptFragment();
         Bundle args = new Bundle();
 //        args.putInt("ClientID", clientID);
@@ -75,7 +77,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         SubAccountReceiptView.setLayoutManager(linearLayoutManager);
         SubAccountReceiptView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eAmount = view.findViewById(R.id.eAmount);
         buttonAdd = view.findViewById(R.id.btnAdd);
         dateFrom = view.findViewById(R.id.edDateFrom);
@@ -156,11 +158,11 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         //=========================
         if (getArguments() != null) {
             chooser = getArguments().getString("originPage");
-            if (chooser.equalsIgnoreCase("FromAccsAdmin")){
+            if (chooser.equalsIgnoreCase("FromAccsAdmin")) {
                 buttonAdd.setVisibility(View.VISIBLE);
-            }else if (chooser.equalsIgnoreCase("FromAccsLgn")){
+            } else if (chooser.equalsIgnoreCase("FromAccsLgn")) {
                 buttonAdd.setVisibility(View.GONE);
-            }else if (chooser.equalsIgnoreCase("FromAccsPwd")){
+            } else if (chooser.equalsIgnoreCase("FromAccsPwd")) {
                 buttonAdd.setVisibility(View.GONE);
             }
             accIdFromAccs = getArguments().getInt("accIdFromAccs");
@@ -168,10 +170,11 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
             mngIdFromAccs = getArguments().getInt("mngIdFromAccs");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SubAccount's List for ");;
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("SubAccount's List for ");
+            ;
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(accNameFromAccs);
 
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
         }
@@ -188,18 +191,34 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         });
         return view;
     }
-    public void refresh(){
+
+    public void refresh() {
         //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
-        ArrayList<SubAccountTotal> allReceipts = mDatabase.listSubAccTotalReceipts(startDate, endDate, mngIdFromAccs);
-        if (allReceipts.size() > 0) {
-            SubAccountReceiptView.setVisibility(View.VISIBLE);
-            SubAccountReceiptAdapter mAdapter = new SubAccountReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("acntIdFromDialog"));
-            SubAccountReceiptView.setAdapter(mAdapter);
-        }
-        else {
-            SubAccountReceiptView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "There is no subAccount in the database. Start adding now", Toast.LENGTH_LONG).show();
-        }
+        showDialog();
+        UIDataStore.UiData<List<SubAccountTotal>> totalReceipts = mDatabase.listSubAccTotalReceipts(startDate, endDate, mngIdFromAccs);
+        totalReceipts.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<SubAccountTotal>>>() {
+            @Override
+            public void onChanged(UIDataStore.Result<List<SubAccountTotal>> listResult) {
+                List<SubAccountTotal> allReceipts = listResult.getResult();
+                if (allReceipts.size() > 0) {
+                    SubAccountReceiptView.setVisibility(View.VISIBLE);
+                    SubAccountReceiptAdapter mAdapter = new SubAccountReceiptAdapter(getActivity(), SubAccountReceiptFragment.this, allReceipts, getArguments().getInt("acntIdFromDialog"));
+                    SubAccountReceiptView.setAdapter(mAdapter);
+                } else {
+                    SubAccountReceiptView.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "There is no subAccount in the database. Start adding now", Toast.LENGTH_LONG).show();
+                }
+                closeDialog();
+            }
+        });
+    }
+
+    private void closeDialog() {
+
+    }
+
+    private void showDialog() {
+
     }
 
     @Override
@@ -263,8 +282,8 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         final EditText subaccnameField = subView.findViewById(R.id.entersacName);
         final EditText mgidField = subView.findViewById(R.id.entersacMgId);
         final EditText accField = subView.findViewById(R.id.entersacAccId);
-        mgidField.setText(mngIdFromAccs+"");
-        accField.setText(accIdFromAccs+"");
+        mgidField.setText(mngIdFromAccs + "");
+        accField.setText(accIdFromAccs + "");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add new SUBACCOUNT");
         builder.setView(subView);
@@ -279,7 +298,9 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     SubAccount newSubAccount = new SubAccount(subacNme, mngid, accid);
-                    mDatabase.addSubAccounts(newSubAccount);
+                    showDialog();
+                    mDatabase.addSubAccounts(newSubAccount)
+                            .observe(getViewLifecycleOwner(), voidResult -> closeDialog());
                     refresh();
                 }
             }
@@ -321,7 +342,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
 //
 //import com.example.mybookkeeper.MainActivity;
 //import com.example.mybookkeeper.R;
-//import com.example.mybookkeeper.SqliteDatabase;
+//import com.example.mybookkeeper.data.UIDataStore;
 //import com.example.mybookkeeper.accounts.Account;
 //import com.example.mybookkeeper.accounts.AccountTotal;
 //import com.example.mybookkeeper.clients.ClientTotal;
@@ -377,7 +398,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 //        SubAccountReceiptView.setLayoutManager(linearLayoutManager);
 //        SubAccountReceiptView.setHasFixedSize(true);
-//        mDatabase = new SqliteDatabase(getActivity());
+//        mDatabase = new SqliteDatabase(context);
 //        eAmount = view.findViewById(R.id.eAmount);
 //        buttonAdd = view.findViewById(R.id.btnAdd);
 //        dateFrom = view.findViewById(R.id.edDateFrom);

@@ -11,33 +11,36 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceiptAdapter.ReceiptDataViewHolder>
         implements Filterable {
     private final RefreshableFragment refreshable;
-    private ArrayList<AccountTotal> AccountReceiptAdapter;
-    private  TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+    private List<AccountTotal> AccountReceiptAdapter;
+    private TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
     private Context context;
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     int mngId;
+    private AlertDialog alertDialog;
 //    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
-    public AccountReceiptAdapter(Context context, RefreshableFragment refreshable, ArrayList<AccountTotal> AccountReceiptAdapter, int mngId) {
+    public AccountReceiptAdapter(Context context, RefreshableFragment refreshable, List<AccountTotal> AccountReceiptAdapter, int mngId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.AccountReceiptAdapter = AccountReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -75,21 +78,23 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + accountTotal.getAccount().getAccName()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + accountTotal.getAccount().getAccName() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        mDatabase.deleteAccount(accountTotal.getAccount().getAccountId());
+                        showDialog(alertDialog);
+                        mDatabase.deleteAccount(accountTotal.getAccount().getAccountId())
+                                .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         });
@@ -142,18 +147,20 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit account");
         builder.setView(accView);
-        builder.create();
+        AlertDialog alertDialog = builder.create();
         builder.setPositiveButton("EDIT CONTACT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String accountName = accNameField.getText().toString();
-                final int mgId = Integer.parseInt( mgIdField.getText().toString());
+                final int mgId = Integer.parseInt(mgIdField.getText().toString());
                 if (TextUtils.isEmpty(accountName) || accountTotal == null) {
                     Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     accountTotal.getAccount().setAccName(accountName);
                     accountTotal.getAccount().setMgId(mgId);
-                    mDatabase.updateAccounts(accountTotal);
+                    showDialog(alertDialog);
+                    mDatabase.updateAccounts(accountTotal)
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }
@@ -184,5 +191,16 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
             editAccount = itemView.findViewById(R.id.editAccount);
         }
     }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
+    }
 }
+
 

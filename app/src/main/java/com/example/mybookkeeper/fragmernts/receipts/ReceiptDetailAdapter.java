@@ -13,37 +13,39 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailAdapter.ReceiptDataViewHolder>
         implements Filterable {
 
     private final RefreshableFragment refreshable;
-    private  EditText date, amount;
+    private EditText date, amount;
     private ImageView editexp, deleteexp;
     private Context context;
-    private ArrayList<ReceiptData> listReceiptDatas;
-    private SqliteDatabase mDatabase;
+    private List<ReceiptData> listReceiptDatas;
+    private UIDataStore mDatabase;
     int clientId;
 
-    ReceiptDetailAdapter(Context context, RefreshableFragment refreshable, ArrayList<ReceiptData> listReceiptDatas, int clientId) {
+    ReceiptDetailAdapter(Context context, RefreshableFragment refreshable, List<ReceiptData> listReceiptDatas, int clientId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.listReceiptDatas = listReceiptDatas;
         this.clientId = clientId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -71,7 +73,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + receiptData.getRctID()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + receiptData.getRctID() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
@@ -79,7 +81,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
@@ -90,6 +92,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
             }
         });
     }
+
     public Filter getFilter() {
         return new Filter() {
             @Override
@@ -185,7 +188,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit receipt");
         builder.setView(subView);
-        builder.create();
+        AlertDialog alertDialog = builder.create();
         builder.setPositiveButton("EDIT receipt", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -193,11 +196,11 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
                 final int receiptno = Integer.parseInt(rctnoField.getText().toString());
                 final int mngid = Integer.parseInt(mngField.getText().toString());
                 final int accid = Integer.parseInt(accField.getText().toString());
-                final  int subaccid = Integer.parseInt(subaccField.getText().toString());
-                final  int clntid = Integer.parseInt(cltIdField.getText().toString());
-                final  String cltName = cltNameField.getText().toString();
+                final int subaccid = Integer.parseInt(subaccField.getText().toString());
+                final int clntid = Integer.parseInt(cltIdField.getText().toString());
+                final String cltName = cltNameField.getText().toString();
                 final double amt = Double.parseDouble(amtField.getText().toString());
-                if (TextUtils.isEmpty(receiptno+"") || receiptno+"" == null) {
+                if (TextUtils.isEmpty(receiptno + "") || receiptno + "" == null) {
                     Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     receipt.setDate(date);
@@ -208,7 +211,9 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
                     receipt.setClientId(clntid);
                     receipt.setCltName(cltName);
                     receipt.setAmount(amt);
-                    mDatabase.updateReceipts(receipt);
+                    showDialog(alertDialog);
+                    mDatabase.updateReceipts(receipt)
+                            .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }
@@ -230,5 +235,15 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
             editReceipt = itemView.findViewById(R.id.editReceipt);
             deleteReceipt = itemView.findViewById(R.id.deleteReceipt);
         }
+    }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
     }
 }

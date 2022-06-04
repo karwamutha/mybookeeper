@@ -1,5 +1,7 @@
 package com.example.mybookkeeper.managers;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.ClientTotal;
@@ -26,4 +28,7 @@ public interface RefreshableFragment {
     void navigateToClients(SubAccount subaccount);
 
     void navigateToClientsDialog(ClientTotal client);
+
+    LifecycleOwner getViewLifecycleOwner();
+
 }

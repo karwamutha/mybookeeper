@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,10 +23,10 @@ import java.util.Date;
 
 public class AddReceiptFragment extends Fragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     EditText eRctNo, eDate, eSubName, eCltName, eMgclid, eAccId, eSubaccId, eClientId, eAmount;
     Button btnInsert, btnClear;
-    String NameHolder, NumberHolder, SQLiteDataBaseQueryHolder;
+    String NameHolder, NumberHolder, UIDataStoreQueryHolder;
     Button buttonEnter;
     View buttonClear;
 
@@ -54,7 +54,7 @@ public class AddReceiptFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_add_receipt, container, false);
 
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eRctNo = view.findViewById(R.id.eRctNo);
         eCltName = view.findViewById(R.id.eClientName);
         eSubName = view.findViewById(R.id.eSubAccName);
@@ -68,11 +68,12 @@ public class AddReceiptFragment extends Fragment {
             clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
             mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
             acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+            subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
+            ;
             clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt for ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO RECEIPT SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED RECEIPT NOT FOUND");
         }
@@ -83,7 +84,7 @@ public class AddReceiptFragment extends Fragment {
         String formattedDate = df.format(date);
         eDate.setText(formattedDate);
 
-        eRctNo.setText(mDatabase.getNextReceiptID() + "");
+        setReceiptNextID();
         eDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,11 +117,12 @@ public class AddReceiptFragment extends Fragment {
                 clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
                 mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
                 acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");;
+                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
+                ;
                 clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
-                final int rctMngId= mngIdFromFFromDialog;
-                final int rctAccId= acntIdFFromDialog;
-                final int rctSubaccId= subAccIdFFromDialog;
+                final int rctMngId = mngIdFromFFromDialog;
+                final int rctAccId = acntIdFFromDialog;
+                final int rctSubaccId = subAccIdFFromDialog;
                 final int rctClientid = clientIDFFromDialog;
                 final String rctCltName = clientNameFFromDialog;
                 final double amount = Double.parseDouble(eAmount.getText().toString());
@@ -130,13 +132,31 @@ public class AddReceiptFragment extends Fragment {
                 } else {
 
                     ReceiptData newReceipt = new ReceiptData(date, rctNo, rctMngId, rctAccId, rctSubaccId, rctClientid, rctCltName, amount);
-                    mDatabase.addReceipt(newReceipt);
-                    Toast.makeText(getActivity(), "Success: Receipt saved", Toast.LENGTH_SHORT).show();
-                    eRctNo.setText(mDatabase.getNextReceiptID() + "");
+                    showDialog();
+                    mDatabase.addReceipt(newReceipt)
+                            .observe(getViewLifecycleOwner(), r -> {
+                                Toast.makeText(getActivity(), "Success: Receipt saved", Toast.LENGTH_SHORT).show();
+                                setReceiptNextID();
+                            });
                     eAmount.setText("");
                 }
             }
         });
         return view;
+    }
+
+    private void showDialog() {
+    }
+
+    private void setReceiptNextID() {
+        mDatabase.getNextReceiptID()
+                .observe(getViewLifecycleOwner(), r -> {
+                    eRctNo.setText(r.getResult() + "");
+                    closeDialog();
+                });
+    }
+
+    private void closeDialog() {
+
     }
 }

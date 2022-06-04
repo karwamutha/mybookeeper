@@ -11,32 +11,34 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptAdapter.ReceiptDataViewHolder>
         implements Filterable {
     private final RefreshableFragment refreshable;
-    private ArrayList<ClientTotal> ClientReceiptAdapter;
-    private  TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+    private List<ClientTotal> ClientReceiptAdapter;
+    private TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
     private Context context;
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     int mngId;
 
-    public ClientReceiptAdapter(Context context, RefreshableFragment refreshable, ArrayList<ClientTotal> ClientReceiptAdapter, int mngId) {
+    public ClientReceiptAdapter(Context context, RefreshableFragment refreshable, List<ClientTotal> ClientReceiptAdapter, int mngId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.ClientReceiptAdapter = ClientReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -69,26 +71,30 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
             }
         });
         holder.deleteClient.setOnClickListener(new View.OnClickListener() {
+            private AlertDialog alertDialog;
+
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + clientTotal.getClient().getCltName()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + clientTotal.getClient().getCltName() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        mDatabase.deleteClient(clientTotal.getClient().getId());
+                        showDialog(alertDialog);
+                        mDatabase.deleteClient(clientTotal.getClient().getId())
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         });
@@ -145,14 +151,14 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit client");
         builder.setView(accView);
-        builder.create();
+        AlertDialog alertDialog = builder.create();
         builder.setPositiveButton("EDIT CONTACT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String clientName = clientNameField.getText().toString();
-                final int mngId = Integer.parseInt( mngIdField.getText().toString());
-                final int accId = Integer.parseInt( accIdField.getText().toString());
-                final int subId = Integer.parseInt( subIdField.getText().toString());
+                final int mngId = Integer.parseInt(mngIdField.getText().toString());
+                final int accId = Integer.parseInt(accIdField.getText().toString());
+                final int subId = Integer.parseInt(subIdField.getText().toString());
                 if (TextUtils.isEmpty(clientName) || clientTotal == null) {
                     Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
@@ -160,7 +166,9 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
                     clientTotal.getClient().setCltMgid(mngId);
                     clientTotal.getClient().setCltAccid(accId);
                     clientTotal.getClient().setCltSubId(subId);
-                    mDatabase.updateClients(clientTotal);
+                    showDialog(alertDialog);
+                    mDatabase.updateClients(clientTotal)
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }
@@ -172,6 +180,16 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
             }
         });
         builder.show();
+    }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
     }
 
     static class ReceiptDataViewHolder extends RecyclerView.ViewHolder {

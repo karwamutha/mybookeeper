@@ -11,11 +11,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.Manager;
 
 public class NewPWordFragment extends Fragment {
@@ -26,7 +27,7 @@ public class NewPWordFragment extends Fragment {
     private TextView eAttemptsInfo;
     private CheckBox eRememberMe;
     Manager manager;
-    SqliteDatabase mDatabase;
+    UIDataStore mDatabase;
 
     String mngNameFromRegister;
     String phoneFromRegister;
@@ -43,18 +44,18 @@ public class NewPWordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_p_word, container, false);
-        mDatabase = new SqliteDatabase(getActivity());
-        eName=v.findViewById(R.id.tvName);
-        ePassword=v.findViewById(R.id.enterNewPWord);
-        eRegister=v.findViewById(R.id.Submit);
-        if (getArguments() != null){
+        mDatabase = new UIDataStore(getActivity());
+        eName = v.findViewById(R.id.tvName);
+        ePassword = v.findViewById(R.id.enterNewPWord);
+        eRegister = v.findViewById(R.id.Submit);
+        if (getArguments() != null) {
             mngNameFromRegister = getArguments().getString("mngNameFromRegister");
             eName.setText(mngNameFromRegister);
             mngIdFromRegister = getArguments().getInt("mngIdFromRegister");
             phoneFromRegister = getArguments().getString("phoneFromRegister");
             pWordFromRegister = getArguments().getString("pWordFromRegister");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(mngNameFromRegister);
-        }else {
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO MANAGER SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED MANAGER NOT FOUND");
         }
@@ -68,10 +69,22 @@ public class NewPWordFragment extends Fragment {
                 }
                 String newPw = ePassword.getText().toString();
                 String name = eName.getText().toString();
-                Manager newManager = mDatabase.searchManagerByPassword(newPw);
+                onRegister(newPw);
+            }
+        });
+        return v;
+    }
+
+    private void onRegister(String newPw) {
+        showDialog();
+        UIDataStore.UiData<Manager> uiData = mDatabase.searchManagerByPassword(newPw);
+        uiData.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<Manager>>() {
+            @Override
+            public void onChanged(UIDataStore.Result<Manager> managerResult) {
+                Manager newManager = managerResult.getResult();
                 if (newManager == null) {
                     Toast.makeText(getActivity(), "Wrong Password", Toast.LENGTH_SHORT).show();
-                    return;
+                    closeDialog();
                 } else {
                     Bundle args = new Bundle();
                     args.putInt("mngIdFromNewPwd", mngIdFromRegister);
@@ -80,11 +93,19 @@ public class NewPWordFragment extends Fragment {
                     args.putString("mngPWoreFromNewPwd", pWordFromRegister);
                     args.putString("originPage", "FromNewPwd");
                     args.putString("btnState", "hideButton");
+                    closeDialog();
                     NavHostFragment.findNavController(NewPWordFragment.this)
                             .navigate(R.id.action_NewPWordFragment_to_AccountReceiptsFragment, args);
                 }
             }
         });
-        return  v;
+    }
+
+    private void closeDialog() {
+
+    }
+
+    private void showDialog() {
+
     }
 }

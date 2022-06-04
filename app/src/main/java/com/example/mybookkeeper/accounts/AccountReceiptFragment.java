@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
@@ -31,13 +31,13 @@ import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class AccountReceiptFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView AccountReceiptView;
     EditText eRctNo, eAmount;
     Manager manager;
@@ -58,7 +58,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
     String mngPhoneFromNewPwd;
     String mngNameFromHomeLgn;
 
-    public static AccountReceiptFragment getInstance(int accId){
+    public static AccountReceiptFragment getInstance(int accId) {
         AccountReceiptFragment r = new AccountReceiptFragment();
         Bundle args = new Bundle();
 //        args.putInt("ClientID", clientID);
@@ -84,7 +84,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         AccountReceiptView.setLayoutManager(linearLayoutManager);
         AccountReceiptView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eRctNo = view.findViewById(R.id.eRctNo);
         eAmount = view.findViewById(R.id.eAmount);
         buttonAdd = view.findViewById(R.id.btnAdd);
@@ -214,43 +214,44 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         dateTo.setText(endDate);
         return view;
     }
-        public void refresh() {
-            if (chooser.equals("FromMngs")) {
-                ArrayList<AccountTotal> allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromMngs);
-                if (allReceipts.size() > 0) {
-                    AccountReceiptView.setVisibility(View.VISIBLE);
-                    AccountReceiptAdapter mAdapter = new AccountReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngIdFromMngs"));
-                    AccountReceiptView.setAdapter(mAdapter);
-                }
-                else {
-                    AccountReceiptView.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-                }
-            } else if (chooser.equals("FromHomeLgn")) {
-                ArrayList<AccountTotal> allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromHomeLgn);
-                if (allReceipts.size() > 0) {
-                    AccountReceiptView.setVisibility(View.VISIBLE);
-                    AccountReceiptAdapter mAdapter = new AccountReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngIdFromHomeLgn"));
-                    AccountReceiptView.setAdapter(mAdapter);
-                }
-                else {
-                    AccountReceiptView.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-                }
 
-            } else if (chooser.equals("FromNewPwd")) {
-                ArrayList<AccountTotal> allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromNewPwd);
-                if (allReceipts.size() > 0) {
-                    AccountReceiptView.setVisibility(View.VISIBLE);
-                    AccountReceiptAdapter mAdapter = new AccountReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngIdFromNewPwd"));
-                    AccountReceiptView.setAdapter(mAdapter);
-                }
-                else {
-                    AccountReceiptView.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-                }
-            }
+    public void refresh() {
+        showDialog();
+        final UIDataStore.UiData<List<AccountTotal>> allReceipts;
+        switch (chooser) {
+            case "FromMngs":
+                allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromMngs);
+                break;
+            case "FromHomeLgn":
+                allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromHomeLgn);
+                break;
+            case "FromNewPwd":
+                allReceipts = mDatabase.listAccTotalReceipts(startDate, endDate, mngIdFromNewPwd);
+                break;
+            default:
+                return;
         }
+        allReceipts.observe(getViewLifecycleOwner(), listResult -> {
+            List<AccountTotal> result = listResult.getResult();
+            if (result != null && result.size() > 0) {
+                AccountReceiptView.setVisibility(View.VISIBLE);
+                AccountReceiptAdapter mAdapter = new AccountReceiptAdapter(getActivity(), this, result, getArguments().getInt("mngIdFromNewPwd"));
+                AccountReceiptView.setAdapter(mAdapter);
+            } else {
+                AccountReceiptView.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
+            }
+            closeDialog();
+        });
+    }
+
+    private void closeDialog() {
+
+    }
+
+    private void showDialog() {
+
+    }
 
     @Override
     public void navigateToManagers(Manager manager) {
@@ -283,7 +284,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
             args.putString("originPage", "FromAccsAdmin");
             NavHostFragment.findNavController(AccountReceiptFragment.this)
                     .navigate(R.id.action_AccountReceiptsFragment_to_SubAccountReceiptFragment, args);
-        }else if (chooser.equals("FromHomeLgn")) {
+        } else if (chooser.equals("FromHomeLgn")) {
             args.putInt("accIdFromAccs", accountTotal.getAccount().getAccountId());
             args.putString("accNameFromAccs", accountTotal.getAccount().getAccName());
             args.putInt("mngIdFromAccs", mngIdFromHomeLgn);
@@ -291,7 +292,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
             args.putString("originPage", "FromAccsLgn");
             NavHostFragment.findNavController(AccountReceiptFragment.this)
                     .navigate(R.id.action_AccountReceiptsFragment_to_SubAccountReceiptFragment, args);
-        }else if (chooser.equals("FromNewPwd")) {
+        } else if (chooser.equals("FromNewPwd")) {
             args.putInt("accIdFromAccs", accountTotal.getAccount().getAccountId());
             args.putString("accNameFromAccs", accountTotal.getAccount().getAccName());
             args.putInt("mngIdFromAccs", mngIdFromNewPwd);
@@ -328,10 +329,10 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         View subView = inflater.inflate(R.layout.add_accounts, null);
         final EditText nameField = subView.findViewById(R.id.enterAccName);
         final EditText mgidField = subView.findViewById(R.id.enterMgid);
-        if (chooser.equals("FromMngs")){
+        if (chooser.equals("FromMngs")) {
             nameField.setText("");
             mgidField.setText(mngIdFromMngs + "");
-        }else if (chooser.equals("FromHomeLgn")){
+        } else if (chooser.equals("FromHomeLgn")) {
             mgidField.setText(mngIdFromHomeLgn + "");
 //        }else if (chooser.equals("FromNewPwd")){
 //            mgidField.setText(mngIdFromNewPwd + "");
@@ -343,24 +344,28 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         builder.setPositiveButton("ADD ACCOUNT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (chooser.equals("FromMngs")){
+                if (chooser.equals("FromMngs")) {
                     final String accNme = nameField.getText().toString();
                     final int mngid = mngIdFromMngs;
                     if (TextUtils.isEmpty(accNme)) {
                         Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                     } else {
                         Account newAccount = new Account(accNme, mngid);
-                        mDatabase.addAccounts(newAccount);
+                        showDialog();
+                        mDatabase.addAccounts(newAccount)
+                                .observe(getViewLifecycleOwner(), r -> closeDialog());
                         refresh();
                     }
-                }else if (chooser.equals("FromHomeLgn")){
+                } else if (chooser.equals("FromHomeLgn")) {
                     final String accNme = nameField.getText().toString();
                     final int mngid = mngIdFromHomeLgn;
                     if (TextUtils.isEmpty(accNme)) {
                         Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                     } else {
                         Account newAccount = new Account(accNme, mngid);
-                        mDatabase.addAccounts(newAccount);
+                        showDialog();
+                        mDatabase.addAccounts(newAccount)
+                                .observe(getViewLifecycleOwner(), r -> closeDialog());
                         refresh();
                     }
 //                }else if (chooser.equals("FromNewPwd")){
@@ -384,6 +389,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         });
         builder.show();
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -11,32 +11,35 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceiptAdapter.ReceiptDataViewHolder>
         implements Filterable {
     private final RefreshableFragment refreshable;
-    private ArrayList<ManagerTotal> ManagerReceiptAdapter;
-    private  TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
+    private List<ManagerTotal> ManagerReceiptAdapter;
+    private TextView tvName, tvReceiptAmount, tvExpenseAmount, tvBalanceAmount;
     private Context context;
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     int mngId;
+    private AlertDialog alertDialog;
 //    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
-    public ManagerReceiptAdapter(Context context, RefreshableFragment refreshable, ArrayList<ManagerTotal> ManagerReceiptAdapter, int mngId) {
+    public ManagerReceiptAdapter(Context context, RefreshableFragment refreshable, List<ManagerTotal> ManagerReceiptAdapter, int mngId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.ManagerReceiptAdapter = ManagerReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -74,21 +77,23 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + managerTotal.getManager().getManagerName()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + managerTotal.getManager().getManagerName() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        mDatabase.deleteManager(managerTotal.getManager().getManagerID());
+                        showDialog(alertDialog);
+                        mDatabase.deleteManager(managerTotal.getManager().getManagerID())
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         });
@@ -105,7 +110,7 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                     ArrayList<ManagerTotal> filteredList = new ArrayList<>();
                     for (ManagerTotal managerTotal : ManagerReceiptAdapter) {
 //                        if (receipts.getPhone().toLowerCase().contains(charString)) {
-                            filteredList.add(managerTotal);
+                        filteredList.add(managerTotal);
 //                        }
                     }
                     ManagerReceiptAdapter = filteredList;
@@ -143,7 +148,7 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit manager");
         builder.setView(accView);
-        builder.create();
+        AlertDialog alertDialog = builder.create();
         builder.setPositiveButton("EDIT CONTACT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -157,7 +162,9 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                     managerTotal.getManager().setManagerName(managerName);
                     managerTotal.getManager().setManagerPhone(managerPhone);
                     managerTotal.getManager().setManagerPassword(managerPassword);
-                    mDatabase.updateManagers(managerTotal);
+                    showDialog(alertDialog);
+                    mDatabase.updateManagers(managerTotal)
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }
@@ -187,5 +194,15 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
             deleteManager = itemView.findViewById(R.id.deleteManager);
             editManager = itemView.findViewById(R.id.editManager);
         }
+    }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
     }
 }

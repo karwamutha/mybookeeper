@@ -14,37 +14,40 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.managers.RefreshableFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailAdapter.ExpenseDataViewHolder>
         implements Filterable {
 
     private final RefreshableFragment refreshable;
-    private  EditText date, descr, amount;
+    private EditText date, descr, amount;
     private ImageView editexp, deleteexp;
     private Context context;
-    private ArrayList<ExpenseData> listExpenseDatas;
-    private SqliteDatabase mDatabase;
+    private List<ExpenseData> listExpenseDatas;
+    private final UIDataStore mDatabase;
     int clientId;
+    private AlertDialog alertDialog;
 
-    ExpenseDetailAdapter(Context context, RefreshableFragment refreshable, ArrayList<ExpenseData> listExpenseDatas, int clientId) {
+    ExpenseDetailAdapter(Context context, RefreshableFragment refreshable, List<ExpenseData> listExpenseDatas, int clientId) {
         this.context = context;
         this.refreshable = (RefreshableFragment) refreshable;
         this.listExpenseDatas = listExpenseDatas;
         this.clientId = clientId;
-        mDatabase = new SqliteDatabase(context);
+        mDatabase = new UIDataStore(context);
     }
 
     @Override
@@ -75,21 +78,23 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm Delete");
                 alertDialogBuilder.setIcon(R.drawable.delete);
-                alertDialogBuilder.setMessage("Delete   "+ "'" + expenseData.getExpID()+"'  ?");
+                alertDialogBuilder.setMessage("Delete   " + "'" + expenseData.getExpID() + "'  ?");
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        mDatabase.deleteExpense(expenseData.getExpID());
+                        showDialog(alertDialog);
+                        mDatabase.deleteExpense(expenseData.getExpID())
+                                .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                         refreshable.refresh();
                     }
                 });
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         });
@@ -193,7 +198,7 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit expense");
         builder.setView(subView);
-        builder.create();
+        alertDialog = builder.create();
         builder.setPositiveButton("EDIT Expense", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -201,14 +206,14 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                 final int expNo = Integer.parseInt(expnoField.getText().toString());
                 final int mngid = Integer.parseInt(mngIdField.getText().toString());
                 final int accid = Integer.parseInt(accIdField.getText().toString());
-                final  int subid = Integer.parseInt(subIdField.getText().toString());
-                final  int clntid = Integer.parseInt(cltIdField.getText().toString());
+                final int subid = Integer.parseInt(subIdField.getText().toString());
+                final int clntid = Integer.parseInt(cltIdField.getText().toString());
                 final String cltName = cltNameField.getText().toString();
                 final String ddescr = descrField.getText().toString();
                 final double amt = Double.parseDouble(amtField.getText().toString());
 
                 Toast.makeText(context, ddescr, Toast.LENGTH_LONG).show();
-                if (TextUtils.isEmpty(amt+"") || ddescr == null) {
+                if (TextUtils.isEmpty(amt + "") || ddescr == null) {
                     Toast.makeText(context, "Something went wrong. Check your input values", Toast.LENGTH_SHORT).show();
                 } else {
                     expense.setDate(date);
@@ -220,7 +225,9 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                     expense.setCltName(cltName);
                     expense.setDescr(ddescr);
                     expense.setAmount(amt);
-                    mDatabase.updateExpense(expense);
+                    showDialog(alertDialog);
+                    mDatabase.updateExpense(expense)
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
                     refreshable.refresh();
                 }
             }
@@ -244,5 +251,15 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
             editExpense = itemView.findViewById(R.id.editExpense);
             deleteExpense = itemView.findViewById(R.id.deleteExpense);
         }
+    }
+
+    private void closeDialog(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+    }
+
+    private void showDialog(AlertDialog alertDialog) {
+        ProgressBar progressBar = new ProgressBar(context);
+        progressBar.setIndeterminate(true);
+        alertDialog.setView(progressBar);
     }
 }

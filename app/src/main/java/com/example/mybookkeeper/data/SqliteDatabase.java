@@ -1,4 +1,4 @@
-package com.example.mybookkeeper;
+package com.example.mybookkeeper.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,8 +20,9 @@ import com.example.mybookkeeper.subaccounts.SubAccount;
 import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class SqliteDatabase extends SQLiteOpenHelper {
+public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
     //DATABASE
     private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "my_manager.db";
@@ -35,53 +36,53 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     private static final String EXPENSE_TABLE = "expenses";
 
     //MANAGER_TABLE COLUMNS
-    private static final String MANAGER_ID = "ManagerId";
-    private static final String MANAGER_NAME = "ManagerName";
-    private static final String MANAGER_PHONE = "ManagerPhone";
-    private static final String MANAGER_PASSWORD = "ManagerPword";
+    public static final String MANAGER_ID = "ManagerId";
+    public static final String MANAGER_NAME = "ManagerName";
+    public static final String MANAGER_PHONE = "ManagerPhone";
+    public static final String MANAGER_PASSWORD = "ManagerPword";
 
     //ACCOUNT_TABLE COLUMNS
-    private static final String ACCOUNT_ID = "AccountId";
-    private static final String ACCOUNT_NAME = "Name";
-    private static final String AC_MNG_ID = "Mg_Id";
+    public static final String ACCOUNT_ID = "AccountId";
+    public static final String ACCOUNT_NAME = "Name";
+    public static final String AC_MNG_ID = "Mg_Id";
 
     //SUBACCOUNT_TABLE COLUMNS
-    private static final String SUBACCOUNT_ID = "SubAccountId";
-    private static final String SUBACCOUNT_NAME = "Name";
-    private static final String SUB_AC_ID = "Ac_Id";
-    private static final String SUB_MG_ID = "Mg_ID";
+    public static final String SUBACCOUNT_ID = "SubAccountId";
+    public static final String SUBACCOUNT_NAME = "Name";
+    public static final String SUB_AC_ID = "Ac_Id";
+    public static final String SUB_MG_ID = "Mg_ID";
 
     //CLIENT_TABLE COLUMNS
-    private static final String CLIENT_ID = "ClientId";
-    private static final String CLIENT_NAME = "Name";
-    private static final String CLIENT_MG_ID = "Mg_ID";
-    private static final String CLIENT_AC_ID = "Ac_Id";
-    private static final String CLIENT_SUBAC_ID = "Subac_Id";
+    public static final String CLIENT_ID = "ClientId";
+    public static final String CLIENT_NAME = "Name";
+    public static final String CLIENT_MG_ID = "Mg_ID";
+    public static final String CLIENT_AC_ID = "Ac_Id";
+    public static final String CLIENT_SUBAC_ID = "Subac_Id";
 
     //RECEIPTS_TABLE COLUMNS
-    private static final String RECEIPT_ID = "RctId";
-    private static final String RECEIPT_DATE = "Date";
-    private static final String RECEIPT_NO = "RctNo";
-    private static final String REC_MG_ID = "RctMgID";
-    private static final String REC_ACC_ID = "AccID";
-    private static final String REC_SUBAC_ID = "SubacID";
-    private static final String REC_CLIENT_ID = "ClientId";
-    private static final String REC_CLIENT_NAME = "CltName";
-    private static final String RECEIPT_AMOUNT = "Amount";
+    public static final String RECEIPT_ID = "RctId";
+    public static final String RECEIPT_DATE = "Date";
+    public static final String RECEIPT_NO = "RctNo";
+    public static final String REC_MG_ID = "RctMgID";
+    public static final String REC_ACC_ID = "AccID";
+    public static final String REC_SUBAC_ID = "SubacID";
+    public static final String REC_CLIENT_ID = "ClientId";
+    public static final String REC_CLIENT_NAME = "CltName";
+    public static final String RECEIPT_AMOUNT = "Amount";
 
     //EXPENSES_TABLE COLUMNS
-    private static final String EXPENSE_ID = "ExpId";
-    private static final String EXPENSE_DATE = "Date";
-    private static final String EXPENSE_NO = "ExpNo";
-    private static final String EXP_MG_ID = "ExpMgID";
-    private static final String EXP_ACC_ID = "AccID";
-    private static final String EXP_SUBAC_ID = "SubacID";
-    private static final String EXP_CLIENT_ID = "ClientId";
-    private static final String EXP_CLIENT_NAME = "CltName";
-    private static final String DESCRIPTION = "Descr";
-    private static final String EXPENSE_AMOUNT = "Amount";
+    public static final String EXPENSE_ID = "ExpId";
+    public static final String EXPENSE_DATE = "Date";
+    public static final String EXPENSE_NO = "ExpNo";
+    public static final String EXP_MG_ID = "ExpMgID";
+    public static final String EXP_ACC_ID = "AccID";
+    public static final String EXP_SUBAC_ID = "SubacID";
+    public static final String EXP_CLIENT_ID = "ClientId";
+    public static final String EXP_CLIENT_NAME = "CltName";
+    public static final String DESCRIPTION = "Descr";
+    public static final String EXPENSE_AMOUNT = "Amount";
 
-    public SqliteDatabase(Context context) {
+    SqliteDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -169,7 +170,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //FETCHING ALL ITEMS============================================================
 //FETCHING ALL MANAGERS
-    public ArrayList<Manager> listManagers() {
+    @Override
+    public List<Manager> listManagers() {
         String sql = "select * from " + MANAGER_TABLE;
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Manager> storeManagers = new ArrayList<>();
@@ -189,7 +191,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL ACCOUNTS
-    public ArrayList<Account> listAccounts(int mgid) {
+    @Override
+    public List<Account> listAccounts(int mgid) {
         String sql = "select * from " + ACCOUNT_TABLE + " WHERE " + AC_MNG_ID + " like '" +
                 mgid + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -209,7 +212,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL ACCOUNTS
-    public ArrayList<Account> listAccountReceipts(int accIdFromDialog, String startDate, String endDate) {
+    public List<Account> listAccountReceipts(int accIdFromDialog, String startDate, String endDate) {
         String sql = "select * from " + ACCOUNT_TABLE + " WHERE " + AC_MNG_ID + " like '" +
                 accIdFromDialog + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -229,7 +232,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL SUBACCOUNTS
-    public ArrayList<SubAccount> listSubAccounts(int accId) {
+    @Override
+    public List<SubAccount> listSubAccounts(int accId) {
         ArrayList<SubAccount> storeSubAccounts = new ArrayList<>();
 
 
@@ -256,7 +260,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL CLIENTS
-    public ArrayList<Client> listClients(int clSubId) {
+    @Override
+    public List<Client> listClients(int clSubId) {
         String sql = "select * from " + CLIENT_TABLE + " WHERE " + CLIENT_SUBAC_ID + " like '" +
                 clSubId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -278,7 +283,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ReceiptData> listReceipts(int clientId) {
+    @Override
+    public List<ReceiptData> listReceipts(int clientId) {
         String sql = "select * from " + RECEIPT_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -305,7 +311,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ReceiptData> listReceipts(int clientId, String startDate, String endDate) {
+    @Override
+    public List<ReceiptData> listReceipts(int clientId, String startDate, String endDate) {
         String sql = "select * from " + RECEIPT_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' AND " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " +
                 "" + RECEIPT_DATE + " <= \"" + endDate + "\" ";
@@ -333,7 +340,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ReceiptData> listAllReceipts() {
+    @Override
+    public List<ReceiptData> listAllReceipts() {
         String sql = "select * from " + RECEIPT_TABLE + "";
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<ReceiptData> storeAllReceipts = new ArrayList<>();
@@ -359,7 +367,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL MANAGER RECEIPTS
-    public ArrayList<ReceiptData> listManagerReceipts(int mngIDFromManager, String startDate, String endDate) {
+    @Override
+    public List<ReceiptData> listManagerReceipts(int mngIDFromManager, String startDate, String endDate) {
         String sql = "select * from " + RECEIPT_TABLE + " WHERE " + REC_MG_ID + " like '" +
                 mngIDFromManager + "' AND " + RECEIPT_DATE + " >= \"" + startDate + "\" AND " +
                 "" + RECEIPT_DATE + " <= \"" + endDate + "\" ";
@@ -386,7 +395,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return storeReceipts;
     }
 
-    public ArrayList<ManagerTotal> listMngrTotalReceipts() {
+    @Override
+    public List<ManagerTotal> listMngrTotalReceipts() {
         ArrayList<ManagerTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + MANAGER_TABLE + " AS m " +
@@ -417,7 +427,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
-    public ArrayList<AccountTotal> listAccTotalReceipts(String startDate, String endDate) {
+    @Override
+    public List<AccountTotal> listAccTotalReceipts(String startDate, String endDate) {
         ArrayList<AccountTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + ACCOUNT_TABLE + " AS m " +
@@ -466,7 +477,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
      5    5   5
      6
      */
-    public ArrayList<AccountTotal> listAccTotalReceipts(String startDate, String endDate, int managerID) {
+    @Override
+    public List<AccountTotal> listAccTotalReceipts(String startDate, String endDate, int managerID) {
         ArrayList<AccountTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + ACCOUNT_TABLE + " AS m " +
@@ -509,7 +521,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
-    public ArrayList<SubAccountTotal> listSubAccTotalReceipts(String startDate, String endDate) {
+    @Override
+    public List<SubAccountTotal> listSubAccTotalReceipts(String startDate, String endDate) {
         ArrayList<SubAccountTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + SUBACCOUNT_TABLE + " AS m " +
@@ -546,7 +559,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<SubAccountTotal> listSubAccTotalReceipts(String startDate, String endDate, int accountID) {
+    @Override
+    public List<SubAccountTotal> listSubAccTotalReceipts(String startDate, String endDate, int accountID) {
         ArrayList<SubAccountTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + SUBACCOUNT_TABLE + " AS m " +
@@ -583,7 +597,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
-    public ArrayList<ClientTotal> listClientTotalReceipts(String startDate, String endDate) {
+    @Override
+    public List<ClientTotal> listClientTotalReceipts(String startDate, String endDate) {
         ArrayList<ClientTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + CLIENT_TABLE + " AS m " +
@@ -620,7 +635,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
-    public ArrayList<ClientTotal> listClientTotalReceipts(String startDate, String endDate, int cltSubId) {
+    @Override
+    public List<ClientTotal> listClientTotalReceipts(String startDate, String endDate, int cltSubId) {
         ArrayList<ClientTotal> items = new ArrayList<>();
         String sql = "SELECT m.*, r.Total AS ReceiptsTotal, e.Total AS ExpensesTotal " +
                 "FROM " + CLIENT_TABLE + " AS m " +
@@ -658,6 +674,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return items;
     }
 
+    @Override
     public SubAccount searchSubAccountByAccId(int id){
         String sql = "SELECT * FROM " + SUBACCOUNT_TABLE + " WHERE " + SUBACCOUNT_ID + " " +
                 "like '" + id + "' ";
@@ -674,7 +691,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ExpenseData> listExpenses(int clientId) {
+    @Override
+    public List<ExpenseData> listExpenses(int clientId) {
         String sql = "select * from " + EXPENSE_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -703,7 +721,8 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //FETCHING ALL RECEIPTS
-    public ArrayList<ExpenseData> listExpenses(int clientId, String startDate, String endDate) {
+    @Override
+    public List<ExpenseData> listExpenses(int clientId, String startDate, String endDate) {
         String sql = "select * from " + EXPENSE_TABLE + " WHERE " + CLIENT_ID + " like '" +
                 clientId + "' AND " + EXPENSE_DATE + " >= \"" + startDate + "\" AND " +
                 "" + EXPENSE_DATE + " <= \"" + endDate + "\" ";
@@ -733,7 +752,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
 //    //FETCHING ALL RECEIPTS
-//    public ArrayList<AllExpensesData> listAllExpenses() {
+//    public List<AllExpensesData> listAllExpenses() {
 //        String sql = "select * from " + EXPENSE_TABLE + "";
 //        SQLiteDatabase db = this.getReadableDatabase();
 //        ArrayList<AllExpensesData> storeAllExpenses = new ArrayList<>();
@@ -762,6 +781,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     //==================== ADD ITEM ========================================
 
     //ADD A MANAGER
+    @Override
     public void addManagers(Manager manager) {
         ContentValues values = new ContentValues();
         values.put(MANAGER_NAME, manager.getManagerName());
@@ -772,6 +792,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD AN ACCOUNT
+    @Override
     public void addAccounts(Account account) {
         ContentValues values = new ContentValues();
         values.put(ACCOUNT_NAME, account.getAccName());
@@ -781,6 +802,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD AN SUBACCOUNT
+    @Override
     public void addSubAccounts(SubAccount subaccount) {
         ContentValues values = new ContentValues();
         values.put(SUBACCOUNT_NAME, subaccount.getSubAccName());
@@ -791,6 +813,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD A CLIENT
+    @Override
     public void addClients(Client clients) {
         ContentValues values = new ContentValues();
         values.put(CLIENT_NAME, clients.getCltName());
@@ -802,6 +825,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD A RECEIPT
+    @Override
     public void addReceipt(ReceiptData receipts) {
         ContentValues values = new ContentValues();
         values.put(RECEIPT_DATE, receipts.getDate());
@@ -817,6 +841,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //ADD A EXPENSE
+    @Override
     public void addExpense(ExpenseData expenseData) {
         ContentValues values = new ContentValues();
         values.put(EXPENSE_DATE, expenseData.getDate());
@@ -834,6 +859,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //==================== UPDAATE ITEM ========================================
     //UPDAATE MANAGER
+    @Override
     public void updateManagers(ManagerTotal managerTotal) {
         ContentValues values = new ContentValues();
         values.put(MANAGER_ID, managerTotal.getManager().getManagerID());
@@ -844,6 +870,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         db.update(MANAGER_TABLE, values, MANAGER_ID + " = ?", new String[]{String.valueOf(managerTotal.getManager().getManagerID())});
     }
 
+    @Override
     public void updateManagers(Manager managerTotal) {
         ContentValues values = new ContentValues();
         values.put(MANAGER_ID, managerTotal.getManagerID());
@@ -855,6 +882,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //UPDATE ACCOUNT
+    @Override
     public void updateAccounts(AccountTotal accountTotal) {
         ContentValues values = new ContentValues();
         values.put(AC_MNG_ID, accountTotal.getAccount().getAccountId());
@@ -864,6 +892,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
     //UPDATE SUBACCOUNT
+    @Override
     public void updateSubAccount(SubAccountTotal subAccountTotal) {
         ContentValues values = new ContentValues();
         values.put(SUBACCOUNT_NAME, subAccountTotal.getSubAccount().getSubAccName());
@@ -875,6 +904,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //UPDATE CLIENT
 
+    @Override
     public void updateClients(ClientTotal clientTotal) {
         ContentValues values = new ContentValues();
         values.put(CLIENT_NAME, clientTotal.getClient().getCltName());
@@ -902,6 +932,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //UPDATE RECEIPT
 
+    @Override
     public void updateReceipts(ReceiptData receiptData) {
         ContentValues values = new ContentValues();
         values.put(RECEIPT_DATE, receiptData.getDate());
@@ -918,6 +949,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //UPDATE EXPENSE
 
+    @Override
     public void updateExpense(ExpenseData expense) {
         ContentValues values = new ContentValues();
         values.put(EXPENSE_DATE, expense.getDate());
@@ -951,6 +983,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
 //======================== SEARCH BY ID =======================================
 
+    @Override
     public Manager searchManagerByID(int mg_id){
         String sql = "SELECT * FROM " + MANAGER_TABLE + " WHERE " + MANAGER_ID + " " +
                 "like '" + mg_id + "' ";
@@ -966,6 +999,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public Account searchAccountByAccId(int id){
         String sql = "SELECT * FROM " + ACCOUNT_TABLE + " WHERE " + ACCOUNT_ID + " " +
                 "like '" + id + "' ";
@@ -980,6 +1014,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public int getNextReceiptID(){
         String sql = "SELECT MAX(" + RECEIPT_ID + ") as Receipt FROM " + RECEIPT_TABLE + " ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -992,6 +1027,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
     }
 
 
+    @Override
     public int getNextExpenseID(){
         String sql = "SELECT MAX(" + EXPENSE_ID + ") as expense FROM " + EXPENSE_TABLE + " ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1003,6 +1039,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return max + 1;
     }
 
+    @Override
     public int getNextManagerID(){
         String sql = "SELECT MAX(" + MANAGER_ID + ") as Mg_ID FROM " + MANAGER_TABLE + " ";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1014,6 +1051,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return max + 1;
     }
 
+    @Override
     public Account searchAccountByID(int id){
         String sql = "SELECT * FROM " + ACCOUNT_TABLE + " WHERE " + ACCOUNT_ID + " " +
                 "like '" + id + "' ";
@@ -1028,6 +1066,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public SubAccount searchSubAccountByID(String id){
         String sql = "SELECT * FROM " + SUBACCOUNT_TABLE + " WHERE " + SUBACCOUNT_ID + " " +
                 "like '" + id + "' ";
@@ -1044,6 +1083,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public Client searchClientByID(int id){
         String sql = "SELECT * FROM " + CLIENT_TABLE + " WHERE " + CLIENT_ID + " " +
                 "like '" + id + "' ";
@@ -1060,6 +1100,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public ReceiptData searchReceiptByID(int id){
         String sql = "SELECT * FROM " + RECEIPT_TABLE + " WHERE " + RECEIPT_ID + " " +
                 "like '" + id + "' ";
@@ -1080,6 +1121,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public Manager searchRctIdByManagerId(int mngIdFromDialog) {
         String sql = "SELECT * FROM " + RECEIPT_TABLE + " WHERE " + REC_MG_ID + " " +
                 "like '" + mngIdFromDialog+ "' ";
@@ -1095,6 +1137,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public ExpenseData searchExpenseByID(int id){
         String sql = "SELECT * FROM " + EXPENSE_TABLE + " WHERE " + EXPENSE_ID + " " +
                 "like '" + id + "' ";
@@ -1118,12 +1161,14 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 
     //==================== DELETE ITEM ========================================
     //DELETE MANAGER
+    @Override
     public void deleteManager(int managerId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(MANAGER_TABLE, MANAGER_ID + " = ?", new String[]{String.valueOf(managerId)});
     }
 
     //DELETE ACCOUNT
+    @Override
     public void deleteAccount(int accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ACCOUNT_TABLE, ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountId)});
@@ -1140,29 +1185,34 @@ public class SqliteDatabase extends SQLiteOpenHelper {
 //    }
 
     //DELETE SU BACCOUNT
+    @Override
     public void deleteSubAccount(int subaccountsId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(SUBACCOUNT_TABLE, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subaccountsId)});
     }
 
     //DELETE CLIENT
+    @Override
     public void deleteClient(int clientsId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(CLIENT_TABLE, CLIENT_ID + " = ?", new String[]{String.valueOf(clientsId)});
     }
 
     //DELETE CLIENT
+    @Override
     public void deleteReceipt(int receiptsID) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(RECEIPT_TABLE, RECEIPT_ID + " = ?", new String[]{String.valueOf(receiptsID)});
     }
 
     //DELETE CLIENT
+    @Override
     public void deleteExpense(int ExpensesID) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(EXPENSE_TABLE, EXPENSE_ID + " = ?", new String[]{String.valueOf(ExpensesID)});
     }
 
+    @Override
     public Manager searchManagerByPassword(String password) {
         String sql = "SELECT * FROM " + MANAGER_TABLE + " WHERE " + MANAGER_PASSWORD + " " +
                 "like '" + password + "' ";
@@ -1178,6 +1228,7 @@ public class SqliteDatabase extends SQLiteOpenHelper {
         return null;
     }
 
+    @Override
     public Manager searchManagerByPhone(String mg_phone, String password) {
         String sql = "SELECT * FROM " + MANAGER_TABLE + " WHERE " + MANAGER_PHONE + " " +
                 "like '" + mg_phone + "' AND " + MANAGER_PASSWORD + " like '" + password + "'";

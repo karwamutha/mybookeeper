@@ -1,9 +1,16 @@
 package com.example.mybookkeeper.managers;
 
+import com.example.mybookkeeper.data.SqliteDatabase;
+import com.google.gson.annotations.SerializedName;
+
 public class Manager {
+    @SerializedName(SqliteDatabase.MANAGER_ID)
     private int managerId;
+    @SerializedName(SqliteDatabase.MANAGER_PHONE)
     private String managerPhone;
+    @SerializedName(SqliteDatabase.MANAGER_PASSWORD)
     private String managerPassword;
+    @SerializedName(SqliteDatabase.MANAGER_NAME)
     private String managerName;
 
     public Manager(int managerId, String managerName, String managerPhone, String managerPassword) {

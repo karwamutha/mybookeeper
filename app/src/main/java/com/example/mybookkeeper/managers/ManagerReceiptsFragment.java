@@ -18,19 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.MainActivity;
 import com.example.mybookkeeper.R;
-import com.example.mybookkeeper.SqliteDatabase;
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.subaccounts.SubAccount;
 import com.example.mybookkeeper.subaccounts.SubAccountTotal;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ManagerReceiptsFragment extends Fragment implements RefreshableFragment {
 
-    private SqliteDatabase mDatabase;
+    private UIDataStore mDatabase;
     RecyclerView ReceiptManagerView;
     ReceiptData ReceiptData;
     EditText eRctNo, eDate, eSubName, eMgclid, eAccId, eSubaccId, eClientId, eAmount;
@@ -38,7 +38,8 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     String fromAcc;
     String clientName;
 
-    String subAccNameFromGallety;;
+    String subAccNameFromGallety;
+    ;
     int mngIdFromFFromGallety;
     int acntIdFFromGallety;
     int subAccIdFFromGallety;
@@ -49,7 +50,7 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     int mngIdFromHome;
     Button bAddNew, bReceipt, bExpense;
 
-    public static ManagerReceiptsFragment getInstance(int mngId){
+    public static ManagerReceiptsFragment getInstance(int mngId) {
         ManagerReceiptsFragment r = new ManagerReceiptsFragment();
         Bundle args = new Bundle();
 //        args.putInt("mngId", mngId);
@@ -75,7 +76,7 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ReceiptManagerView.setLayoutManager(linearLayoutManager);
         ReceiptManagerView.setHasFixedSize(true);
-        mDatabase = new SqliteDatabase(getActivity());
+        mDatabase = new UIDataStore(getActivity());
         eRctNo = view.findViewById(R.id.eRctNo);
         eAmount = view.findViewById(R.id.eAmount);
 
@@ -83,7 +84,7 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
             mngIdFromHome = getArguments().getInt("mngIdFromHome");
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("MANAGERS LIST");
 //            ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
-        }else{
+        } else {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("NO ACCOUNT SELECTED");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
         }
@@ -97,17 +98,30 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
         });
         return view;
     }
-    public void refresh(){
-        ArrayList<ManagerTotal> allReceipts = mDatabase.listMngrTotalReceipts();
-        if (allReceipts.size() > 0) {
-            ReceiptManagerView.setVisibility(View.VISIBLE);
-            ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(),  this, allReceipts, getArguments().getInt("mngIdFromHome"));
-            ReceiptManagerView.setAdapter(mAdapter);
-        }
-        else {
-            ReceiptManagerView.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
-        }
+
+    public void refresh() {
+        showDialog();
+        UIDataStore.UiData<List<ManagerTotal>> totalReceipts = mDatabase.listMngrTotalReceipts();
+        totalReceipts.observe(getViewLifecycleOwner(), listResult -> {
+            List<ManagerTotal> allReceipts = listResult.getResult();
+            if (allReceipts != null && allReceipts.size() > 0) {
+                ReceiptManagerView.setVisibility(View.VISIBLE);
+                ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(), this, allReceipts, getArguments().getInt("mngIdFromHome"));
+                ReceiptManagerView.setAdapter(mAdapter);
+            } else {
+                ReceiptManagerView.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
+            }
+            closeDialog();
+        });
+    }
+
+    private void closeDialog() {
+
+    }
+
+    private void showDialog() {
+
     }
 
     @Override
@@ -180,10 +194,11 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
                 final String mgPassword = passwordField.getText().toString();
                 if (TextUtils.isEmpty(mgName)) {
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
-                }
-                else {
+                } else {
                     Manager newManager = new Manager(mgName, mgPhone, mgPassword);
-                    mDatabase.addManagers(newManager);
+                    showDialog();
+                    mDatabase.addManagers(newManager)
+                            .observe(getViewLifecycleOwner(), r -> closeDialog());
                     refresh();
                 }
             }
@@ -196,6 +211,7 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
         });
         builder.show();
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

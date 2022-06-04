@@ -8,6 +8,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     //private SqliteDatabase mDatabase;
     @Override
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle("HOME PAGE");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("HOME PAGE");
         toolbar.setSubtitle("My Book_keeper");
         toolbar.setLogo(android.R.drawable.ic_btn_speak_now);
 
