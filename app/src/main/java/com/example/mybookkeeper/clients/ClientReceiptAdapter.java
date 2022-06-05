@@ -1,6 +1,7 @@
 package com.example.mybookkeeper.clients;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
     private Context context;
     private UIDataStore mDatabase;
     int mngId;
+    private ProgressDialog progress;
 
     public ClientReceiptAdapter(Context context, RefreshableFragment refreshable, List<ClientTotal> ClientReceiptAdapter, int mngId) {
         this.context = context;
@@ -82,9 +84,9 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        showDialog(alertDialog);
+                        showProgressDialog("Deleting...");
                         mDatabase.deleteClient(clientTotal.getClient().getId())
-                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeProgressDialog());
                         refreshable.refresh();
                     }
                 });
@@ -166,9 +168,9 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
                     clientTotal.getClient().setCltMgid(mngId);
                     clientTotal.getClient().setCltAccid(accId);
                     clientTotal.getClient().setCltSubId(subId);
-                    showDialog(alertDialog);
+                    showProgressDialog("Updating...");
                     mDatabase.updateClients(clientTotal)
-                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                     refreshable.refresh();
                 }
             }
@@ -182,14 +184,23 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
         builder.show();
     }
 
-    private void closeDialog(AlertDialog alertDialog) {
-        alertDialog.dismiss();
+
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog(AlertDialog alertDialog) {
-        ProgressBar progressBar = new ProgressBar(context);
-        progressBar.setIndeterminate(true);
-        alertDialog.setView(progressBar);
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(context);
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     static class ReceiptDataViewHolder extends RecyclerView.ViewHolder {

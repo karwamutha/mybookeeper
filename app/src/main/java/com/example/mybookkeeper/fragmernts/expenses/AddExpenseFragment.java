@@ -1,6 +1,7 @@
 package com.example.mybookkeeper.fragmernts.expenses;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ public class AddExpenseFragment extends Fragment {
     int acntIdFFromDialog;
     int subAccIdFFromDialog;
     int clientIDFFromDialog;
+    private ProgressDialog progress;
 
     public static AddExpenseFragment getInstance(int clientID) {
         AddExpenseFragment r = new AddExpenseFragment();
@@ -83,7 +85,7 @@ public class AddExpenseFragment extends Fragment {
         String formattedDate = df.format(date);
         eDate.setText(formattedDate);
 
-        showDialog();
+        showProgressDialog("Getting expense id...");
         setNextExpenseId();
         eDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +135,7 @@ public class AddExpenseFragment extends Fragment {
                 } else {
 
                     ExpenseData newExpense = new ExpenseData(date, expNo, expMngId, expAccId, expSubaccId, expClientid, expCltName, descr, amount);
-                    showDialog();
+                    showProgressDialog("Adding Expense...");
                     mDatabase.addExpense(newExpense)
                             .observe(getViewLifecycleOwner(), r -> setNextExpenseId());
                     Toast.makeText(getActivity(), "Success: Expense saved", Toast.LENGTH_SHORT).show();
@@ -148,15 +150,26 @@ public class AddExpenseFragment extends Fragment {
         mDatabase.getNextExpenseID()
                 .observe(getViewLifecycleOwner(), r -> {
                     eExpNo.setText(r.getResult() + "");
-                    closeDialog();
+                    closeProgressDialog();
                 });
     }
 
-    private void closeDialog() {
 
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
-    private void showDialog() {
-
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 }

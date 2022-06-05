@@ -1,9 +1,11 @@
 package com.example.mybookkeeper.managers;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,7 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     String mngNameFromHome;
     int mngIdFromHome;
     Button bAddNew, bReceipt, bExpense;
+    private ProgressDialog progress;
 
     public static ManagerReceiptsFragment getInstance(int mngId) {
         ManagerReceiptsFragment r = new ManagerReceiptsFragment();
@@ -100,28 +103,40 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
     }
 
     public void refresh() {
-        showDialog();
+        showProgressDialog("Refreshing...");
         UIDataStore.UiData<List<ManagerTotal>> totalReceipts = mDatabase.listMngrTotalReceipts();
         totalReceipts.observe(getViewLifecycleOwner(), listResult -> {
             List<ManagerTotal> allReceipts = listResult.getResult();
+            Log.d("TAGD", "listMngrTotalReceipts: 1234"+allReceipts);
             if (allReceipts != null && allReceipts.size() > 0) {
                 ReceiptManagerView.setVisibility(View.VISIBLE);
                 ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(), this, allReceipts, getArguments().getInt("mngIdFromHome"));
                 ReceiptManagerView.setAdapter(mAdapter);
             } else {
                 ReceiptManagerView.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "There is no manager in the database. Start adding now", Toast.LENGTH_LONG).show();
             }
-            closeDialog();
+            closeProgressDialog();
         });
     }
 
-    private void closeDialog() {
 
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     @Override
@@ -196,9 +211,9 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     Manager newManager = new Manager(mgName, mgPhone, mgPassword);
-                    showDialog();
+                    showProgressDialog("Adding Manager...");
                     mDatabase.addManagers(newManager)
-                            .observe(getViewLifecycleOwner(), r -> closeDialog());
+                            .observe(getViewLifecycleOwner(), r -> closeProgressDialog());
                     refresh();
                 }
             }

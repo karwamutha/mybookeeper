@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
@@ -860,7 +861,7 @@ public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
     //==================== UPDAATE ITEM ========================================
     //UPDAATE MANAGER
     @Override
-    public void updateManagers(ManagerTotal managerTotal) {
+    public void updateManagerTotals(ManagerTotal managerTotal) {
         ContentValues values = new ContentValues();
         values.put(MANAGER_ID, managerTotal.getManager().getManagerID());
         values.put(MANAGER_NAME, managerTotal.getManager().getManagerName());

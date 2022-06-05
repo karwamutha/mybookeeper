@@ -91,7 +91,7 @@ public interface BaseDataStore {
 
     //==================== UPDAATE ITEM ========================================
     //UPDAATE MANAGER
-    void updateManagers(ManagerTotal managerTotal) throws Throwable;
+    void updateManagerTotals(ManagerTotal managerTotal) throws Throwable;
 
     void updateManagers(Manager managerTotal) throws Throwable;
 

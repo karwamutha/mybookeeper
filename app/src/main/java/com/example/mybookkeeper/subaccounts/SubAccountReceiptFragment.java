@@ -2,6 +2,7 @@ package com.example.mybookkeeper.subaccounts;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -50,6 +51,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
     int mngIdFromAccs;
     int accIdFromAccs;
     Button buttonAdd;
+    private ProgressDialog progress;
 
     public static SubAccountReceiptFragment getInstance(int accId) {
         SubAccountReceiptFragment r = new SubAccountReceiptFragment();
@@ -194,7 +196,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
 
     public void refresh() {
         //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
-        showDialog();
+        showProgressDialog("Refreshing...");
         UIDataStore.UiData<List<SubAccountTotal>> totalReceipts = mDatabase.listSubAccTotalReceipts(startDate, endDate, mngIdFromAccs);
         totalReceipts.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<SubAccountTotal>>>() {
             @Override
@@ -208,17 +210,27 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
                     SubAccountReceiptView.setVisibility(View.GONE);
                     Toast.makeText(getActivity(), "There is no subAccount in the database. Start adding now", Toast.LENGTH_LONG).show();
                 }
-                closeDialog();
+                closeProgressDialog();
             }
         });
     }
 
-    private void closeDialog() {
-
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     @Override
@@ -298,9 +310,9 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
                     Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                 } else {
                     SubAccount newSubAccount = new SubAccount(subacNme, mngid, accid);
-                    showDialog();
+                    showProgressDialog("Adding sub-account...");
                     mDatabase.addSubAccounts(newSubAccount)
-                            .observe(getViewLifecycleOwner(), voidResult -> closeDialog());
+                            .observe(getViewLifecycleOwner(), voidResult -> closeProgressDialog());
                     refresh();
                 }
             }

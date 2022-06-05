@@ -1,6 +1,7 @@
 package com.example.mybookkeeper.fragmernts.expenses;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
 
     EditText dateFrom, dateTo;
     String startDate, endDate;
+    private ProgressDialog progress;
 
     public static ExpenseDetailFragment getInstance(int clientID) {
         ExpenseDetailFragment r = new ExpenseDetailFragment();
@@ -172,7 +174,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
     }
 
     public void refresh() {
-        showDialog();
+        showProgressDialog("Refreshing...");
         UIDataStore.UiData<List<ExpenseData>> listUiData = mDatabase.listExpenses(clientIDFFromDialog);
         listUiData.observe(getViewLifecycleOwner(), listResult -> {
             List<ExpenseData> allExpenses = listResult.getResult();
@@ -184,16 +186,26 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
                 ExpenseView.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
             }
-            closeDialog();
+            closeProgressDialog();
         });
     }
 
-    private void showDialog() {
-
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void closeDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     @Override

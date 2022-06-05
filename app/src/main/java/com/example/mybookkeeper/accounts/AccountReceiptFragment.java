@@ -2,6 +2,7 @@ package com.example.mybookkeeper.accounts;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -57,6 +58,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
     String mngNameFromNewPwd;
     String mngPhoneFromNewPwd;
     String mngNameFromHomeLgn;
+    private ProgressDialog progress;
 
     public static AccountReceiptFragment getInstance(int accId) {
         AccountReceiptFragment r = new AccountReceiptFragment();
@@ -216,7 +218,7 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
     }
 
     public void refresh() {
-        showDialog();
+        showProgressDialog("Refreshing...");
         final UIDataStore.UiData<List<AccountTotal>> allReceipts;
         switch (chooser) {
             case "FromMngs":
@@ -241,16 +243,27 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
                 AccountReceiptView.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "There is no account in the database. Start adding now", Toast.LENGTH_LONG).show();
             }
-            closeDialog();
+            closeProgressDialog();
         });
     }
 
-    private void closeDialog() {
 
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     @Override
@@ -351,9 +364,9 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
                         Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                     } else {
                         Account newAccount = new Account(accNme, mngid);
-                        showDialog();
+                        showProgressDialog("Adding account..");
                         mDatabase.addAccounts(newAccount)
-                                .observe(getViewLifecycleOwner(), r -> closeDialog());
+                                .observe(getViewLifecycleOwner(), r -> closeProgressDialog());
                         refresh();
                     }
                 } else if (chooser.equals("FromHomeLgn")) {
@@ -363,9 +376,9 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
                         Toast.makeText(getActivity(), "Something went wrong. Check your input values", Toast.LENGTH_LONG).show();
                     } else {
                         Account newAccount = new Account(accNme, mngid);
-                        showDialog();
+                        showProgressDialog("Adding account...");
                         mDatabase.addAccounts(newAccount)
-                                .observe(getViewLifecycleOwner(), r -> closeDialog());
+                                .observe(getViewLifecycleOwner(), r -> closeProgressDialog());
                         refresh();
                     }
 //                }else if (chooser.equals("FromNewPwd")){

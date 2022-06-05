@@ -2,6 +2,7 @@ package com.example.mybookkeeper.fragmernts.receipts;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -39,6 +40,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
     private List<ReceiptData> listReceiptDatas;
     private UIDataStore mDatabase;
     int clientId;
+    private ProgressDialog progress;
 
     ReceiptDetailAdapter(Context context, RefreshableFragment refreshable, List<ReceiptData> listReceiptDatas, int clientId) {
         this.context = context;
@@ -211,9 +213,9 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
                     receipt.setClientId(clntid);
                     receipt.setCltName(cltName);
                     receipt.setAmount(amt);
-                    showDialog(alertDialog);
+                    showProgressDialog("Editing...");
                     mDatabase.updateReceipts(receipt)
-                            .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
+                            .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeProgressDialog());
                     refreshable.refresh();
                 }
             }
@@ -237,13 +239,22 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
         }
     }
 
-    private void closeDialog(AlertDialog alertDialog) {
-        alertDialog.dismiss();
+
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog(AlertDialog alertDialog) {
-        ProgressBar progressBar = new ProgressBar(context);
-        progressBar.setIndeterminate(true);
-        alertDialog.setView(progressBar);
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(context);
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 }

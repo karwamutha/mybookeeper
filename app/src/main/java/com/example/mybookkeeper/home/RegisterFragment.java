@@ -1,5 +1,6 @@
 package com.example.mybookkeeper.home;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -32,6 +33,7 @@ public class RegisterFragment extends Fragment {
     String mngNameFromHomePwd;
     String phoneFromHomePwd, pWordFromHomePwd;
     int mngIdFromHomePwd;
+    private ProgressDialog progress;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -87,7 +89,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerOrUpdateManager(String oldPw, String name) {
-        showDialog();
+        showProgressDialog("Registering Manager...");
         UIDataStore.UiData<Manager> uiData = mDatabase.searchManagerByPassword(oldPw);
         uiData.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<Manager>>() {
             @Override
@@ -95,7 +97,7 @@ public class RegisterFragment extends Fragment {
                 Manager newManager = managerResult.getResult();
                 if (newManager == null) {
                     Toast.makeText(RegisterFragment.this.getActivity(), name + "  Wrong Password  " + oldPw, Toast.LENGTH_SHORT).show();
-                    RegisterFragment.this.closeDialog();
+                    RegisterFragment.this.closeProgressDialog();
                 } else {
                     String newPassword = eNewPassword.getText().toString();
                     newManager.setManagerPassword(newPassword);
@@ -106,7 +108,7 @@ public class RegisterFragment extends Fragment {
                         args.putString("mngNameFromRegister", eName.getText().toString());
                         args.putString("phoneFromRegister", phoneFromHomePwd);
                         args.putString("pWordFromRegister", pWordFromHomePwd);
-                        RegisterFragment.this.closeDialog();
+                        RegisterFragment.this.closeProgressDialog();
                         NavHostFragment.findNavController(RegisterFragment.this)
                                 .navigate(R.id.action_RegisterFragment_to_NewPWordFragment, args);
                     });
@@ -115,11 +117,22 @@ public class RegisterFragment extends Fragment {
         });
     }
 
-    private void closeDialog() {
-
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true);
+            progress.show();
+        }
     }
 }

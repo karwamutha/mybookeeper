@@ -1,6 +1,7 @@
 package com.example.mybookkeeper.fragmernts.receipts;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class AddReceiptFragment extends Fragment {
     int acntIdFFromDialog;
     int subAccIdFFromDialog;
     int clientIDFFromDialog;
+    private ProgressDialog progress;
 
     public static AddReceiptFragment getInstance(int clientID) {
         AddReceiptFragment r = new AddReceiptFragment();
@@ -132,7 +134,7 @@ public class AddReceiptFragment extends Fragment {
                 } else {
 
                     ReceiptData newReceipt = new ReceiptData(date, rctNo, rctMngId, rctAccId, rctSubaccId, rctClientid, rctCltName, amount);
-                    showDialog();
+                    showProgressDialog("Adding receipt");
                     mDatabase.addReceipt(newReceipt)
                             .observe(getViewLifecycleOwner(), r -> {
                                 Toast.makeText(getActivity(), "Success: Receipt saved", Toast.LENGTH_SHORT).show();
@@ -145,18 +147,30 @@ public class AddReceiptFragment extends Fragment {
         return view;
     }
 
-    private void showDialog() {
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     private void setReceiptNextID() {
         mDatabase.getNextReceiptID()
                 .observe(getViewLifecycleOwner(), r -> {
                     eRctNo.setText(r.getResult() + "");
-                    closeDialog();
+                    closeProgressDialog();
                 });
     }
 
-    private void closeDialog() {
-
-    }
 }

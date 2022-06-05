@@ -1,5 +1,6 @@
 package com.example.mybookkeeper.home;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.example.mybookkeeper.data.UIDataStore;
 import com.example.mybookkeeper.data.samis.OnlineDataStore;
 import com.example.mybookkeeper.databinding.FragmentHomeBinding;
 import com.example.mybookkeeper.managers.Manager;
+import com.example.mybookkeeper.managers.ManagerTotal;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -34,6 +36,7 @@ public class HomeFragment extends Fragment {
     UIDataStore mDatabase;
     int counter = 5;
     private RelativeLayout adminButton;
+    private ProgressDialog progress;
 
     @Override
     public View onCreateView(
@@ -106,7 +109,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void processPasswordClickLogin(String phoneNp, String password) {
-        showDialog();
+        showProgressDialog("Logging in...");
         UIDataStore.UiData<Manager> managerUiData = mDatabase.searchManagerByPhone(phoneNp, password);
         managerUiData.observe(getViewLifecycleOwner(), managerResult -> {
 
@@ -115,14 +118,14 @@ public class HomeFragment extends Fragment {
                 String msg = managerResult.getErrorMessage().isEmpty() ? "Phone or password is empty"
                         : managerResult.getErrorMessage();
                 Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                closeDialog();
+                closeProgressDialog();
             } else {
                 Bundle args = new Bundle();
                 args.putString("phoneFromHomePwd", phoneNp);
                 args.putString("pWordFromHomePwd", password);
                 args.putInt("mngIdFromHomePwd", manager.getManagerID());
                 args.putString("mngNameFromHomePwd", manager.getManagerName());
-                closeDialog();
+                closeProgressDialog();
                 NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_HomeFragment_to_RegisterFragment, args);
             }
@@ -131,21 +134,21 @@ public class HomeFragment extends Fragment {
     }
 
     private void processSimpleLogin(String phone, String password) {
-        showDialog();
+        showProgressDialog("Logging in...");
         UIDataStore.UiData<Manager> managerUiData = mDatabase.searchManagerByPhone(phone, password);
         managerUiData.observe(getViewLifecycleOwner(), managerResult -> {
             onSimpleLoginresult(phone, password, managerResult);
-            closeDialog();
+            closeProgressDialog();
         });
     }
 
 
     private void processAdminLogin(String phoneNo, String passowrd) {
-        showDialog();
+        showProgressDialog("Logging in...");
         UIDataStore.UiData<Manager> managerUiData = mDatabase.searchManagerByPhone(phoneNo, passowrd);
         managerUiData.observe(getViewLifecycleOwner(), managerResult -> {
             onAdminLoginResult(phoneNo, passowrd, managerResult);
-            closeDialog();
+            closeProgressDialog();
         });
     }
 
@@ -199,17 +202,28 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void showDialog() {
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void closeDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-//        testOnlineLedger();
+        testOnlineLedger();
     }
 
     private void testOnlineLedger() {
@@ -223,6 +237,22 @@ public class HomeFragment extends Fragment {
                     for (Manager manager : managers) {
                         Log.i("Managers .. ", manager.getManagerName());
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return "";
+            }
+        };
+        asyncTask = new AsyncTask<Object, Integer, Object>() {
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                OnlineDataStore dataStore = new OnlineDataStore(getContext());
+                try {
+                    Log.e("UPLOAD", "sending manager");
+                    Manager manager1 = new Manager("Kihara Karua", "0753124224", "1234");
+                    ManagerTotal manager = new ManagerTotal(manager1, 300, 500);
+                    dataStore.updateManagerTotals(manager);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

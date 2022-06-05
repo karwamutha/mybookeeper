@@ -3,6 +3,7 @@ package com.example.mybookkeeper.fragmernts.expenses;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -41,6 +42,7 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
     private final UIDataStore mDatabase;
     int clientId;
     private AlertDialog alertDialog;
+    private ProgressDialog progress;
 
     ExpenseDetailAdapter(Context context, RefreshableFragment refreshable, List<ExpenseData> listExpenseDatas, int clientId) {
         this.context = context;
@@ -82,9 +84,9 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        showDialog(alertDialog);
+                        showProgressDialog("Deleting...");
                         mDatabase.deleteExpense(expenseData.getExpID())
-                                .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                                .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                         refreshable.refresh();
                     }
                 });
@@ -225,9 +227,9 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                     expense.setCltName(cltName);
                     expense.setDescr(ddescr);
                     expense.setAmount(amt);
-                    showDialog(alertDialog);
+                    showProgressDialog("Editing..");
                     mDatabase.updateExpense(expense)
-                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                     refreshable.refresh();
                 }
             }
@@ -253,13 +255,21 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
         }
     }
 
-    private void closeDialog(AlertDialog alertDialog) {
-        alertDialog.dismiss();
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog(AlertDialog alertDialog) {
-        ProgressBar progressBar = new ProgressBar(context);
-        progressBar.setIndeterminate(true);
-        alertDialog.setView(progressBar);
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(context);
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 }

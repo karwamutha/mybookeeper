@@ -1,6 +1,7 @@
 package com.example.mybookkeeper.subaccounts;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -33,6 +34,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
     private UIDataStore mDatabase;
     int mngId;
     private AlertDialog alertDialog;
+    private ProgressDialog progress;
 //    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
     public SubAccountReceiptAdapter(Context context, RefreshableFragment refreshable, List<SubAccountTotal> SubAccountReceiptAdapter, int mngId) {
@@ -82,9 +84,9 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        showDialog(alertDialog);
+                        showProgressDialog("Deleting..");
                         mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId())
-                                .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                                .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                         refreshable.refresh();
                     }
                 });
@@ -100,14 +102,22 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
         });
     }
 
-    private void closeDialog(AlertDialog alertDialog) {
-        alertDialog.dismiss();
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog(AlertDialog alertDialog) {
-        ProgressBar progressBar = new ProgressBar(context);
-        progressBar.setIndeterminate(true);
-        alertDialog.setView(progressBar);
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(context);
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 
     public Filter getFilter() {
@@ -166,9 +176,9 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                     subAccountTotal.getSubAccount().setSubAccName(name);
                     subAccountTotal.getSubAccount().setSubMgId(mgid);
                     subAccountTotal.getSubAccount().setsubAccId(accId);
-                    showDialog(alertDialog);
+                    showProgressDialog("Editing...");
                     mDatabase.updateSubAccount(subAccountTotal)
-                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                     refreshable.refresh();
                 }
             }

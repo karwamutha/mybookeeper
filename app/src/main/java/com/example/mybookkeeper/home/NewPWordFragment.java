@@ -1,5 +1,6 @@
 package com.example.mybookkeeper.home;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,7 @@ public class NewPWordFragment extends Fragment {
     String pWordFromRegister;
     int mngIdFromRegister;
     private int counter = 5;
+    private ProgressDialog progress;
 
     public NewPWordFragment() {
         // Required empty public constructor
@@ -76,7 +78,7 @@ public class NewPWordFragment extends Fragment {
     }
 
     private void onRegister(String newPw) {
-        showDialog();
+        showProgressDialog("Registering...");
         UIDataStore.UiData<Manager> uiData = mDatabase.searchManagerByPassword(newPw);
         uiData.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<Manager>>() {
             @Override
@@ -84,7 +86,7 @@ public class NewPWordFragment extends Fragment {
                 Manager newManager = managerResult.getResult();
                 if (newManager == null) {
                     Toast.makeText(getActivity(), "Wrong Password", Toast.LENGTH_SHORT).show();
-                    closeDialog();
+                    closeProgressDialog();
                 } else {
                     Bundle args = new Bundle();
                     args.putInt("mngIdFromNewPwd", mngIdFromRegister);
@@ -93,7 +95,7 @@ public class NewPWordFragment extends Fragment {
                     args.putString("mngPWoreFromNewPwd", pWordFromRegister);
                     args.putString("originPage", "FromNewPwd");
                     args.putString("btnState", "hideButton");
-                    closeDialog();
+                    closeProgressDialog();
                     NavHostFragment.findNavController(NewPWordFragment.this)
                             .navigate(R.id.action_NewPWordFragment_to_AccountReceiptsFragment, args);
                 }
@@ -101,11 +103,21 @@ public class NewPWordFragment extends Fragment {
         });
     }
 
-    private void closeDialog() {
-
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog() {
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(getContext());
 
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 }

@@ -1,8 +1,8 @@
 package com.example.mybookkeeper.data;
 
 import android.content.Context;
+import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.mybookkeeper.accounts.Account;
@@ -76,7 +76,7 @@ public class UIDataStore {
         UiData<Void> uiData = new UiData<>();
         executor.execute(() -> {
             try {
-                baseDataStore.updateManagers(managerTotal);
+                baseDataStore.updateManagerTotals(managerTotal);
                 uiData.postValue(new Result<>(null));
             } catch (Throwable throwable) {
                 uiData.postValue(new Result<>(throwable));

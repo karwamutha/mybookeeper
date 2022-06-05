@@ -1,9 +1,11 @@
 package com.example.mybookkeeper.managers;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
     private UIDataStore mDatabase;
     int mngId;
     private AlertDialog alertDialog;
+    private ProgressDialog progress;
 //    TextView tvName, tvRctAmount, tvExpAmount, tvExBalAmount;
 
     public ManagerReceiptAdapter(Context context, RefreshableFragment refreshable, List<ManagerTotal> ManagerReceiptAdapter, int mngId) {
@@ -81,9 +84,9 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                 alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        showDialog(alertDialog);
+                        showProgressDialog("Deleting...");
                         mDatabase.deleteManager(managerTotal.getManager().getManagerID())
-                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeDialog(alertDialog));
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeProgressDialog());
                         refreshable.refresh();
                     }
                 });
@@ -162,9 +165,9 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                     managerTotal.getManager().setManagerName(managerName);
                     managerTotal.getManager().setManagerPhone(managerPhone);
                     managerTotal.getManager().setManagerPassword(managerPassword);
-                    showDialog(alertDialog);
+                    showProgressDialog("Editing...");
                     mDatabase.updateManagers(managerTotal)
-                            .observe(refreshable.getViewLifecycleOwner(), r -> closeDialog(alertDialog));
+                            .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
                     refreshable.refresh();
                 }
             }
@@ -196,13 +199,21 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
         }
     }
 
-    private void closeDialog(AlertDialog alertDialog) {
-        alertDialog.dismiss();
+    private void closeProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+            progress = null;
+        }
     }
 
-    private void showDialog(AlertDialog alertDialog) {
-        ProgressBar progressBar = new ProgressBar(context);
-        progressBar.setIndeterminate(true);
-        alertDialog.setView(progressBar);
+    private void showProgressDialog(String message) {
+        if (progress == null) {
+            progress = new ProgressDialog(context);
+
+            progress.setMessage(message);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setCancelable(false);
+            progress.setIndeterminate(true); progress.show();
+        }
     }
 }
