@@ -1,11 +1,17 @@
 package com.example.mybookkeeper.accounts;
 
-import com.example.mybookkeeper.accounts.Account;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class AccountTotal {
+    @JsonUnwrapped
     private Account account;
     private double receiptsTotal;
     private double expensesTotal;
+
+    @JsonCreator
+    public AccountTotal() {
+    }
 
     public AccountTotal(Account account, double receiptsTotal, double expensesTotal) {
         this.account = account;

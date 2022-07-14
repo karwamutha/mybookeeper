@@ -1,9 +1,17 @@
 package com.example.mybookkeeper.subaccounts;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 public class SubAccountTotal {
+    @JsonUnwrapped
     private SubAccount subaccount;
     private double receiptsTotal;
     private double expensesTotal;
+
+    @JsonCreator
+    public SubAccountTotal() {
+    }
 
     public SubAccountTotal(SubAccount subaccount, double receiptsTotal, double expensesTotal) {
         this.subaccount = subaccount;

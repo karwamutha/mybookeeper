@@ -1,9 +1,17 @@
 package com.example.mybookkeeper.managers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 public class ManagerTotal {
+    @JsonUnwrapped
     private Manager manager;
     private double receiptsTotal;
     private double expensesTotal;
+
+    @JsonCreator
+    public ManagerTotal() {
+    }
 
     public ManagerTotal(Manager manager, double receiptsTotal, double expensesTotal) {
         this.manager = manager;

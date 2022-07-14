@@ -2,16 +2,19 @@ package com.example.mybookkeeper.data.samis;
 
 import android.util.Log;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,19 +27,24 @@ import retrofit2.http.POST;
 
 public interface SbitKenyaLedgerApi {
 
-    Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+    ObjectMapper mapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .enable(MapperFeature.AUTO_DETECT_SETTERS)
+            .enable(MapperFeature.AUTO_DETECT_GETTERS)
+            .build();
 
     @FormUrlEncoded
     @POST(".")
     Call<ResponseBody> phpFunction(@FieldMap Map<String, String> formData);
 
-    default <T> List<T> phpFunction(Map<String, String> variables, Type type) throws IOException {
+    default <T> List<T> phpFunction(Map<String, String> variables, TypeReference<List<T>> type) throws IOException {
         Call<ResponseBody> function = phpFunction(variables);
         Response<ResponseBody> response = function.execute();
         ResponseBody body = response.body();
         String string;
         if (response.isSuccessful() && body != null && isNonNullNotEmpty(string = body.string())) {
-            return gson.fromJson(string, type);
+            return mapper.readValue(string, type);
         }
         return Collections.emptyList();
     }
@@ -47,7 +55,8 @@ public interface SbitKenyaLedgerApi {
         ResponseBody body = response.body();
         String string;
         if (response.isSuccessful() && body != null && isNonNullNotEmpty(string = body.string())) {
-            return gson.fromJson(string, obj);
+            Log.i("RESPONSE:::", string);
+            return mapper.readValue(string, obj);
         }
         return null;
     }
@@ -56,19 +65,21 @@ public interface SbitKenyaLedgerApi {
         HashMap<String, String> map = new HashMap<>();
         map.put("item", itemType);
 
-        JsonObject jsonObject = gson.toJsonTree(entity).getAsJsonObject();
+        ObjectNode jsonObject = mapper.valueToTree(entity);
         recursivelyPopulate(map, jsonObject);
         Log.i("UPLOAD", "UPLOADING.. " + map);
 
         phpFunctionNoBody(map);
     }
 
-    default void recursivelyPopulate(Map<String, String> map, JsonObject object) {
-        for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-            if (entry.getValue().isJsonObject()) {
-                recursivelyPopulate(map, entry.getValue().getAsJsonObject());
+    default void recursivelyPopulate(Map<String, String> map, ObjectNode object) {
+        Iterator<Map.Entry<String, JsonNode>> fields = object.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> entry = fields.next();
+            if (entry.getValue().isObject()) {
+                recursivelyPopulate(map, (ObjectNode) entry.getValue());
             } else {
-                map.put(entry.getKey(), entry.getValue().getAsString());
+                map.put(entry.getKey(), entry.getValue().asText());
             }
         }
     }

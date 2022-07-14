@@ -157,6 +157,7 @@ public class HomeFragment extends Fragment {
         if (manager == null) {
             final String msg = managerResult.getErrorMessage().isEmpty() ? "Wrong Credentials"
                     : managerResult.getErrorMessage();
+            Log.e("API ERROR", msg);
             Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
             counter--;
             eAttempts.setText(Integer.toString(counter));
@@ -177,7 +178,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void onSimpleLoginresult(String phone, String password, UIDataStore.Result<Manager> managerResult) {
-        if (managerResult.isFailure()) {
+        Manager manager = managerResult.getResult();
+        if (manager == null) {
             final String msg = managerResult.getErrorMessage().isEmpty() ? "Wrong Credentials"
                     : managerResult.getErrorMessage();
             Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
@@ -190,7 +192,6 @@ public class HomeFragment extends Fragment {
             }
         } else {
             Bundle args = new Bundle();
-            Manager manager = managerResult.getResult();
             args.putString("phoneFromHomeLgn", phone);
             args.putString("pWordromHomeLgn", password);
             args.putInt("mngIdFromHomeLgn", manager.getManagerID());

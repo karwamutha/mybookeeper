@@ -14,43 +14,40 @@ import com.example.mybookkeeper.managers.Manager;
 import com.example.mybookkeeper.managers.ManagerTotal;
 import com.example.mybookkeeper.subaccounts.SubAccount;
 import com.example.mybookkeeper.subaccounts.SubAccountTotal;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class OnlineDataStore implements BaseDataStore {
 
     private static final String URL = "http://ledger.sbitkenya.com/bookkeeper.php/";
-    private static final Type RECEIPT_DATA_LIST_TYPE = new TypeToken<List<ReceiptData>>() {
-    }.getType();
-    private static final Type CLIENT_LIST_TYPE = new TypeToken<List<Client>>() {
-    }.getType();
-    private static final Type MANAGER_LIST_TYPE = new TypeToken<List<Manager>>() {
-    }.getType();
-    private static final Type ACCOUNT_LIST_TYPE = new TypeToken<List<Account>>() {
-    }.getType();
-    private static final Type SUB_ACCOUNT_LIST_TYPE = new TypeToken<List<SubAccount>>() {
-    }.getType();
-    private static final Type MANAGER_TOTAL_LIST_TYPE = new TypeToken<List<ManagerTotal>>() {
-    }.getType();
-    private static final Type ACCOUNT_TOTAL_LIST_TYPE = new TypeToken<List<AccountTotal>>() {
-    }.getType();
-    private static final Type SUB_ACCOUNT_TOTAL_LIST_TYPE = new TypeToken<List<SubAccountTotal>>() {
-    }.getType();
-    private static final Type CLIENT_TOTAL_LIST_TYPE = new TypeToken<List<ClientTotal>>() {
-    }.getType();
-    ;
-    private static final Type EXPENSE_DATA_LIST_TYPE = new TypeToken<List<ExpenseData>>() {
-    }.getType();
-    ;
+    private static final TypeReference RECEIPT_DATA_LIST_TYPE = new TypeReference<List<ReceiptData>>() {
+    };
+    private static final TypeReference<List<Client>> CLIENT_LIST_TYPE = new TypeReference<List<Client>>() {
+    };
+    private static final TypeReference<List<Manager>> MANAGER_LIST_TYPE = new TypeReference<List<Manager>>() {
+    };
+    private static final TypeReference<List<Account>> ACCOUNT_LIST_TYPE = new TypeReference<List<Account>>() {
+    };
+    private static final TypeReference<List<SubAccount>> SUB_ACCOUNT_LIST_TYPE = new TypeReference<List<SubAccount>>() {
+    };
+    private static final TypeReference<List<ManagerTotal>> MANAGER_TOTAL_LIST_TYPE = new TypeReference<List<ManagerTotal>>() {
+    };
+    private static final TypeReference<List<AccountTotal>> ACCOUNT_TOTAL_LIST_TYPE = new TypeReference<List<AccountTotal>>() {
+    };
+    private static final TypeReference<List<SubAccountTotal>> SUB_ACCOUNT_TOTAL_LIST_TYPE = new TypeReference<List<SubAccountTotal>>() {
+    };
+    private static final TypeReference<List<ClientTotal>> CLIENT_TOTAL_LIST_TYPE = new TypeReference<List<ClientTotal>>() {
+    };
+    private static final TypeReference<List<ExpenseData>> EXPENSE_DATA_LIST_TYPE = new TypeReference<List<ExpenseData>>() {
+    };
     private final Context context;
     private final String url;
     private final SbitKenyaLedgerApi ledgerService;
@@ -65,7 +62,7 @@ public class OnlineDataStore implements BaseDataStore {
         this.url = url;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(SbitKenyaLedgerApi.mapper))
                 .build();
         ledgerService = retrofit.create(SbitKenyaLedgerApi.class);
     }

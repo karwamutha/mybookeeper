@@ -9,6 +9,7 @@ import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.Client;
 import com.example.mybookkeeper.clients.ClientTotal;
+import com.example.mybookkeeper.data.samis.OnlineDataStore;
 import com.example.mybookkeeper.fragmernts.expenses.ExpenseData;
 import com.example.mybookkeeper.fragmernts.receipts.ReceiptData;
 import com.example.mybookkeeper.managers.Manager;
@@ -26,7 +27,7 @@ public class UIDataStore {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public UIDataStore(Context context) {
-        baseDataStore = new SqliteDatabase(context);
+        baseDataStore = new OnlineDataStore(context);
     }
 
     public UiData<Manager> searchManagerByPhone(String phoneNo, String password) {
@@ -43,7 +44,7 @@ public class UIDataStore {
     }
 
     public String getFirstManagerId() {
-        return "0792058707";
+        return "0724895791";
     }
 
     public UiData<Manager> searchManagerByPassword(String password) {

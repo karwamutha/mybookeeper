@@ -1,11 +1,18 @@
 package com.example.mybookkeeper.clients;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Client {
     private int Id;
     private String cltName;
     private int CltMgid;
     private int cltAccid;
     private int cltSubId;
+
+    @JsonCreator
+    public Client() {
+    }
 
     public Client(int id, String cltName, int CltMgid, int cltAccid, int cltSubId) {
         this.Id = id;

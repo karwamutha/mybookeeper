@@ -6,11 +6,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mybookkeeper.fragmernts.TransactionDialogFragment;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class ClientTotal extends RecyclerView.Adapter {
+    @JsonUnwrapped
     private Client client;
     private double receiptsTotal;
     private double expensesTotal;
+
+    @JsonCreator
+    public ClientTotal() {
+    }
 
     public ClientTotal(Client client, double receiptsTotal, double expensesTotal) {
         this.client = client;
