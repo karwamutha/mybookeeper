@@ -28,10 +28,7 @@ import retrofit2.http.POST;
 public interface SbitKenyaLedgerApi {
 
     ObjectMapper mapper = JsonMapper.builder()
-            .propertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(MapperFeature.AUTO_DETECT_SETTERS)
-            .enable(MapperFeature.AUTO_DETECT_GETTERS)
             .build();
 
     @FormUrlEncoded
@@ -39,12 +36,15 @@ public interface SbitKenyaLedgerApi {
     Call<ResponseBody> phpFunction(@FieldMap Map<String, String> formData);
 
     default <T> List<T> phpFunction(Map<String, String> variables, TypeReference<List<T>> type) throws IOException {
+        Log.i("LIST...", variables.toString());
         Call<ResponseBody> function = phpFunction(variables);
         Response<ResponseBody> response = function.execute();
         ResponseBody body = response.body();
         String string;
         if (response.isSuccessful() && body != null && isNonNullNotEmpty(string = body.string())) {
+            Log.i("LIST...", "RESPONSE->" + string);
             return mapper.readValue(string, type);
+
         }
         return Collections.emptyList();
     }

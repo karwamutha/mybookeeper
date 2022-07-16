@@ -205,12 +205,10 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("SELECTED ACCOUNT NOT FOUND");
         }
         refresh();
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addTaskDialog();
-            }
-        });
+        buttonAdd.setOnClickListener(view1 -> addTaskDialog());
+
+        Button submitDateButton = view.findViewById(R.id.btnSubmit);
+        submitDateButton.setOnClickListener(clicked -> refresh());
 
         dateFrom.setText(startDate);
         dateTo.setText(endDate);

@@ -1,13 +1,19 @@
 package com.example.mybookkeeper.clients;
 
+import com.example.mybookkeeper.data.SqliteDatabase;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Client {
+    @JsonProperty(SqliteDatabase.CLIENT_ID)
     private int Id;
+    @JsonProperty(SqliteDatabase.CLIENT_NAME)
     private String cltName;
+    @JsonProperty(SqliteDatabase.CLIENT_MG_ID)
     private int CltMgid;
+    @JsonProperty(SqliteDatabase.CLIENT_AC_ID)
     private int cltAccid;
+    @JsonProperty(SqliteDatabase.CLIENT_SUBAC_ID)
     private int cltSubId;
 
     @JsonCreator

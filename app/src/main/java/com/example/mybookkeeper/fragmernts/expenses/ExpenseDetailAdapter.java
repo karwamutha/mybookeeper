@@ -86,8 +86,10 @@ public class ExpenseDetailAdapter<S> extends RecyclerView.Adapter<ExpenseDetailA
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting...");
                         mDatabase.deleteExpense(expenseData.getExpID())
-                                .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
-                        refreshable.refresh();
+                                .observe(refreshable.getViewLifecycleOwner(), r -> {
+                                    closeProgressDialog();
+                                    refreshable.refresh();
+                                });
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {

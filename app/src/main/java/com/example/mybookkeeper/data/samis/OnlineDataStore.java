@@ -28,7 +28,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 public class OnlineDataStore implements BaseDataStore {
 
     private static final String URL = "http://ledger.sbitkenya.com/bookkeeper.php/";
-    private static final TypeReference RECEIPT_DATA_LIST_TYPE = new TypeReference<List<ReceiptData>>() {
+    private static final TypeReference<List<ReceiptData>> RECEIPT_DATA_LIST_TYPE = new TypeReference<List<ReceiptData>>() {
     };
     private static final TypeReference<List<Client>> CLIENT_LIST_TYPE = new TypeReference<List<Client>>() {
     };

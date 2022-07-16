@@ -86,8 +86,10 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting...");
                         mDatabase.deleteAccount(accountTotal.getAccount().getAccountId())
-                                .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
-                        refreshable.refresh();
+                                .observe(refreshable.getViewLifecycleOwner(), (r) -> {
+                                    closeProgressDialog();
+                                    refreshable.refresh();
+                                });
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -209,7 +211,8 @@ public class AccountReceiptAdapter<S> extends RecyclerView.Adapter<AccountReceip
             progress.setMessage(message);
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progress.setCancelable(false);
-            progress.setIndeterminate(true); progress.show();
+            progress.setIndeterminate(true);
+            progress.show();
         }
     }
 }

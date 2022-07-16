@@ -86,8 +86,10 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting...");
                         mDatabase.deleteManager(managerTotal.getManager().getManagerID())
-                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeProgressDialog());
-                        refreshable.refresh();
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> {
+                                    closeProgressDialog();
+                                    refreshable.refresh();
+                                });
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {

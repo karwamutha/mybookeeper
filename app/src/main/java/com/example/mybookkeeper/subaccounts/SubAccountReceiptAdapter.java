@@ -86,8 +86,11 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting..");
                         mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId())
-                                .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());
-                        refreshable.refresh();
+                                .observe(refreshable.getViewLifecycleOwner(), r -> {
+                                    closeProgressDialog();
+                                    refreshable.refresh();
+                                });
+
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {

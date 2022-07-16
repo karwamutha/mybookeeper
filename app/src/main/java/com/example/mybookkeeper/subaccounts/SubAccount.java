@@ -1,9 +1,16 @@
 package com.example.mybookkeeper.subaccounts;
 
+import com.example.mybookkeeper.data.SqliteDatabase;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SubAccount {
+    @JsonProperty(SqliteDatabase.SUBACCOUNT_NAME)
     private String subAccName;
+    @JsonProperty(SqliteDatabase.SUB_AC_ID)
     private int subAccId;
+    @JsonProperty(SqliteDatabase.SUB_AC_ID)
     private int accId;
+    @JsonProperty(SqliteDatabase.SUB_MG_ID)
     private int subMgId;
 
     public SubAccount(int subAccId, String subAccName, int myMngId, int accid) {

@@ -185,12 +185,10 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
 
         refresh();
         Button btnAdd = view.findViewById(R.id.btnAdd);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addTaskDialog();
-            }
-        });
+        btnAdd.setOnClickListener(view1 -> addTaskDialog());
+
+        Button submitDateButton = view.findViewById(R.id.btnSubmit);
+        submitDateButton.setOnClickListener(clicked -> refresh());
         return view;
     }
 

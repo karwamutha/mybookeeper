@@ -224,42 +224,5 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        testOnlineLedger();
-    }
-
-    private void testOnlineLedger() {
-        AsyncTask asyncTask = new AsyncTask<Object, Integer, Object>() {
-
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                OnlineDataStore dataStore = new OnlineDataStore(getContext());
-                try {
-                    List<Manager> managers = dataStore.listManagers();
-                    for (Manager manager : managers) {
-                        Log.i("Managers .. ", manager.getManagerName());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-        };
-        asyncTask = new AsyncTask<Object, Integer, Object>() {
-
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                OnlineDataStore dataStore = new OnlineDataStore(getContext());
-                try {
-                    Log.e("UPLOAD", "sending manager");
-                    Manager manager1 = new Manager("Kihara Karua", "0753124224", "1234");
-                    ManagerTotal manager = new ManagerTotal(manager1, 300, 500);
-                    dataStore.updateManagerTotals(manager);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-        };
-        asyncTask.execute();
     }
 }

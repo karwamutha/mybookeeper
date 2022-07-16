@@ -86,8 +86,11 @@ public class ClientReceiptAdapter<S> extends RecyclerView.Adapter<ClientReceiptA
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting...");
                         mDatabase.deleteClient(clientTotal.getClient().getId())
-                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> closeProgressDialog());
-                        refreshable.refresh();
+                                .observe(refreshable.getViewLifecycleOwner(), voidResult -> {
+                                    closeProgressDialog();
+                                    refreshable.refresh();
+                                });
+
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
