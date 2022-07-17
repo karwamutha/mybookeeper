@@ -274,7 +274,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
     @Override
     public void navigateToClientTotal(SubAccountTotal subAccountTotal) {
         Bundle args = new Bundle();
-        args.putInt("subAccIdFromSubacc", subAccountTotal.getSubAccount().getsubAccId());
+        args.putInt("subAccIdFromSubacc", subAccountTotal.getSubAccount().getSubAccId());
         args.putString("subAccNameFromSubaccs", subAccountTotal.getSubAccount().getSubAccName());
         args.putInt("acntIdFromSubaccs", accIdFromAccs);
         args.putInt("mngIdFromSubacc", accIdFromAccs);

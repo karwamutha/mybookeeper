@@ -1,16 +1,31 @@
 package com.example.mybookkeeper.fragmernts.receipts;
 
+import com.example.mybookkeeper.data.SqliteDatabase;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ReceiptData {
 
+    @JsonProperty(SqliteDatabase.RECEIPT_ID)
     private int rctId;
+    @JsonProperty(SqliteDatabase.RECEIPT_DATE)
     private String date;
+    @JsonProperty(SqliteDatabase.RECEIPT_NO)
     private int rctNo;
+    @JsonProperty(SqliteDatabase.REC_MG_ID)
     private int mgid;
+    @JsonProperty(SqliteDatabase.REC_MG_ID)
     private int accId;
+    @JsonProperty(SqliteDatabase.REC_SUBAC_ID)
     private int subId;
+    @JsonProperty(SqliteDatabase.REC_CLIENT_ID)
     private int clientId;
+    @JsonProperty(SqliteDatabase.REC_CLIENT_NAME)
     private String cltName;
+    @JsonProperty(SqliteDatabase.RECEIPT_AMOUNT)
     private double amount;
+
+    public ReceiptData() {
+    }
 
     public ReceiptData(int rctId, String date, int rctNo,
                        int mgid, int accId, int subId,

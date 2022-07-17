@@ -5,9 +5,7 @@ import android.util.Log;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -36,13 +34,13 @@ public interface SbitKenyaLedgerApi {
     Call<ResponseBody> phpFunction(@FieldMap Map<String, String> formData);
 
     default <T> List<T> phpFunction(Map<String, String> variables, TypeReference<List<T>> type) throws IOException {
-        Log.i("LIST...", variables.toString());
+        Log.i("REQ_RES", "REQUESTING->List... " + variables);
         Call<ResponseBody> function = phpFunction(variables);
         Response<ResponseBody> response = function.execute();
         ResponseBody body = response.body();
         String string;
         if (response.isSuccessful() && body != null && isNonNullNotEmpty(string = body.string())) {
-            Log.i("LIST...", "RESPONSE->" + string);
+            Log.i("REQ_RES", "RESPONSE->List... " + string);
             return mapper.readValue(string, type);
 
         }
@@ -50,12 +48,13 @@ public interface SbitKenyaLedgerApi {
     }
 
     default <T> T phpFunction(Map<String, String> variables, Class<T> obj) throws IOException {
+        Log.i("REQ_RES", "REQUESTING->OBJECT... " + variables);
         Call<ResponseBody> function = phpFunction(variables);
         Response<ResponseBody> response = function.execute();
         ResponseBody body = response.body();
         String string;
         if (response.isSuccessful() && body != null && isNonNullNotEmpty(string = body.string())) {
-            Log.i("RESPONSE:::", string);
+            Log.i("REQ_RES", "RESPONSE... " + string);
             return mapper.readValue(string, obj);
         }
         return null;
@@ -67,7 +66,6 @@ public interface SbitKenyaLedgerApi {
 
         ObjectNode jsonObject = mapper.valueToTree(entity);
         recursivelyPopulate(map, jsonObject);
-        Log.i("UPLOAD", "UPLOADING.. " + map);
 
         phpFunctionNoBody(map);
     }
@@ -85,6 +83,7 @@ public interface SbitKenyaLedgerApi {
     }
 
     default void phpFunctionNoBody(Map<String, String> map) throws IOException {
+        Log.i("REQ_RES", "UPLOADING... " + map);
         Call<ResponseBody> function = phpFunction(map);
         Response<ResponseBody> response = function.execute();
         if (!response.isSuccessful()) {

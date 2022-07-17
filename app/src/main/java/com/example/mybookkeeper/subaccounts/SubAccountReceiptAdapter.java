@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,7 +84,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         showProgressDialog("Deleting..");
-                        mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getsubAccId())
+                        mDatabase.deleteSubAccount(subAccountTotal.getSubAccount().getSubAccId())
                                 .observe(refreshable.getViewLifecycleOwner(), r -> {
                                     closeProgressDialog();
                                     refreshable.refresh();
@@ -161,7 +160,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
         if (subAccountTotal != null) {
             nameField.setText(subAccountTotal.getSubAccount().getSubAccName());
             mgidField.setText(subAccountTotal.getSubAccount().getSubMgId() + "");
-            accIdField.setText(subAccountTotal.getSubAccount().getsubAccId() + "");
+            accIdField.setText(subAccountTotal.getSubAccount().getSubAccId() + "");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit subaccount");

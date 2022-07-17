@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
@@ -808,7 +807,7 @@ public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
         ContentValues values = new ContentValues();
         values.put(SUBACCOUNT_NAME, subaccount.getSubAccName());
         values.put(SUB_MG_ID, subaccount.getSubMgId());
-        values.put(SUB_AC_ID, subaccount.getsubAccId());
+        values.put(SUB_AC_ID, subaccount.getSubAccId());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(SUBACCOUNT_TABLE, null, values);
     }
@@ -898,9 +897,9 @@ public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
         ContentValues values = new ContentValues();
         values.put(SUBACCOUNT_NAME, subAccountTotal.getSubAccount().getSubAccName());
         values.put(SUB_MG_ID, subAccountTotal.getSubAccount().getSubMgId());
-        values.put(SUB_AC_ID, subAccountTotal.getSubAccount().getsubAccId());
+        values.put(SUB_AC_ID, subAccountTotal.getSubAccount().getSubAccId());
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(SUBACCOUNT_TABLE, values, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subAccountTotal.getSubAccount().getsubAccId())});
+        db.update(SUBACCOUNT_TABLE, values, SUBACCOUNT_ID + " = ?", new String[]{String.valueOf(subAccountTotal.getSubAccount().getSubAccId())});
     }
 
     //UPDATE CLIENT

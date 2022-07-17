@@ -13,11 +13,14 @@ public class SubAccount {
     @JsonProperty(SqliteDatabase.SUB_MG_ID)
     private int subMgId;
 
+    public SubAccount() {
+    }
+
     public SubAccount(int subAccId, String subAccName, int myMngId, int accid) {
         this.subAccId = subAccId;
         this.subAccName = subAccName;
-        this.subMgId = subMgId;
-        this.accId = accId;
+        this.subMgId = myMngId;
+        this.accId = accid;
     }
     public SubAccount(String subAccName, int subMgId, int accid) {
         this.subAccName = subAccName;
@@ -27,10 +30,6 @@ public class SubAccount {
     public SubAccount(String subAccName, int subMgId) {
         this.subAccName = subAccName;
         this.subMgId = subMgId;
-    }
-
-    public int getsubAccId(int accId) {
-        return subAccId;
     }
 
     public void setsubAccId(int subAccId) {
@@ -54,11 +53,23 @@ public class SubAccount {
         return subAccName;
     }
 
-    public int getsubAccId() {
+    public int getSubAccId() {
         return subAccId;
     }
 
     public int getSubMgId() {
         return subMgId;
+    }
+
+    public void setSubAccId(int subAccId) {
+        this.subAccId = subAccId;
+    }
+
+    public int getAccId() {
+        return accId;
+    }
+
+    public void setAccId(int accId) {
+        this.accId = accId;
     }
 }
