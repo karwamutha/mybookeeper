@@ -177,7 +177,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
                 } else {
                     subAccountTotal.getSubAccount().setSubAccName(name);
                     subAccountTotal.getSubAccount().setSubMgId(mgid);
-                    subAccountTotal.getSubAccount().setsubAccId(accId);
+                    subAccountTotal.getSubAccount().setAccId(accId);
                     showProgressDialog("Editing...");
                     mDatabase.updateSubAccount(subAccountTotal)
                             .observe(refreshable.getViewLifecycleOwner(), r -> closeProgressDialog());

@@ -86,12 +86,12 @@ public class UIDataStore {
         return uiData;
     }
 
-    public UiData<List<SubAccountTotal>> listSubAccTotalReceipts(String startDate, String endDate, int mngIdFromAccs) {
+    public UiData<List<SubAccountTotal>> listSubAccTotalReceipts(String startDate, String endDate, int accountId) {
         UiData<List<SubAccountTotal>> uiData = new UiData<>();
         executor.execute(() -> {
             try {
                 List<SubAccountTotal> accountTotals = baseDataStore
-                        .listSubAccTotalReceipts(startDate, endDate, mngIdFromAccs);
+                        .listSubAccTotalReceipts(startDate, endDate, accountId);
                 uiData.postValue(new Result<>(accountTotals));
             } catch (Throwable throwable) {
                 uiData.postValue(new Result<>(throwable));

@@ -195,7 +195,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
     public void refresh() {
         //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
         showProgressDialog("Refreshing...");
-        UIDataStore.UiData<List<SubAccountTotal>> totalReceipts = mDatabase.listSubAccTotalReceipts(startDate, endDate, mngIdFromAccs);
+        UIDataStore.UiData<List<SubAccountTotal>> totalReceipts = mDatabase.listSubAccTotalReceipts(startDate, endDate, accIdFromAccs);
         totalReceipts.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<SubAccountTotal>>>() {
             @Override
             public void onChanged(UIDataStore.Result<List<SubAccountTotal>> listResult) {
@@ -310,8 +310,10 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
                     SubAccount newSubAccount = new SubAccount(subacNme, mngid, accid);
                     showProgressDialog("Adding sub-account...");
                     mDatabase.addSubAccounts(newSubAccount)
-                            .observe(getViewLifecycleOwner(), voidResult -> closeProgressDialog());
-                    refresh();
+                            .observe(getViewLifecycleOwner(), voidResult -> {
+                                closeProgressDialog();
+                                refresh();
+                            });
                 }
             }
         }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

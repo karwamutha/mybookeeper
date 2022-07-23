@@ -61,13 +61,18 @@ public interface SbitKenyaLedgerApi {
     }
 
     default void phpFunction(String itemType, Object entity) throws IOException {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("item", itemType);
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("item", itemType);
 
-        ObjectNode jsonObject = mapper.valueToTree(entity);
-        recursivelyPopulate(map, jsonObject);
+            ObjectNode jsonObject = mapper.valueToTree(entity);
+            recursivelyPopulate(map, jsonObject);
 
-        phpFunctionNoBody(map);
+            phpFunctionNoBody(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     default void recursivelyPopulate(Map<String, String> map, ObjectNode object) {

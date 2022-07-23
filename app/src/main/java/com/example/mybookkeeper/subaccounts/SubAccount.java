@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SubAccount {
     @JsonProperty(SqliteDatabase.SUBACCOUNT_NAME)
     private String subAccName;
-    @JsonProperty(SqliteDatabase.SUB_AC_ID)
+    @JsonProperty(SqliteDatabase.SUBACCOUNT_ID)
     private int subAccId;
     @JsonProperty(SqliteDatabase.SUB_AC_ID)
     private int accId;
@@ -25,18 +25,10 @@ public class SubAccount {
     public SubAccount(String subAccName, int subMgId, int accid) {
         this.subAccName = subAccName;
         this.subMgId = subMgId;
-        this.subAccId = accid;
-    }
-    public SubAccount(String subAccName, int subMgId) {
-        this.subAccName = subAccName;
-        this.subMgId = subMgId;
+        this.accId = accid;
     }
 
-    public void setsubAccId(int subAccId) {
-        this.subAccId = subAccId;
-    }
-
-    public String getSubAccName(String subAccName) {
+    public String getSubAccName() {
         return subAccName;
     }
 
@@ -44,21 +36,8 @@ public class SubAccount {
         this.subAccName = subAccName;
     }
 
-    public int getSubMgId(int mgid) { return subMgId; }
-
-    public void setSubMgId(int subMgId) { this.subMgId = subMgId;
-    }
-
-    public String getSubAccName() {
-        return subAccName;
-    }
-
     public int getSubAccId() {
         return subAccId;
-    }
-
-    public int getSubMgId() {
-        return subMgId;
     }
 
     public void setSubAccId(int subAccId) {
@@ -71,5 +50,13 @@ public class SubAccount {
 
     public void setAccId(int accId) {
         this.accId = accId;
+    }
+
+    public int getSubMgId() {
+        return subMgId;
+    }
+
+    public void setSubMgId(int subMgId) {
+        this.subMgId = subMgId;
     }
 }
