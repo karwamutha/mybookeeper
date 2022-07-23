@@ -2,6 +2,7 @@ package com.example.mybookkeeper.managers;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -108,7 +109,9 @@ public class ManagerReceiptsFragment extends Fragment implements RefreshableFrag
         totalReceipts.observe(getViewLifecycleOwner(), listResult -> {
             List<ManagerTotal> allReceipts = listResult.getResult();
             Log.d("TAGD", "listMngrTotalReceipts: 1234"+allReceipts);
-            if (allReceipts != null && allReceipts.size() > 0) {
+            if (listResult.isFailure()){
+                displayNonBlockingError(getContext(), listResult.getException());
+            } else if (allReceipts.size() > 0) {
                 ReceiptManagerView.setVisibility(View.VISIBLE);
                 ManagerReceiptAdapter mAdapter = new ManagerReceiptAdapter(getActivity(), this, allReceipts, getArguments().getInt("mngIdFromHome"));
                 ReceiptManagerView.setAdapter(mAdapter);

@@ -156,7 +156,6 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
             mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
             acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
             subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
-            ;
             clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
             startDate = firstDayOfMonthStr;
             endDate = lastDayOfMonthStr;
@@ -178,7 +177,9 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
         UIDataStore.UiData<List<ExpenseData>> listUiData = mDatabase.listExpenses(clientIDFFromDialog);
         listUiData.observe(getViewLifecycleOwner(), listResult -> {
             List<ExpenseData> allExpenses = listResult.getResult();
-            if (allExpenses.size() > 0) {
+            if (listResult.isFailure()){
+                displayNonBlockingError(getContext(), listResult.getException());
+            } else if (allExpenses != null && allExpenses.size() > 0) {
                 ExpenseView.setVisibility(View.VISIBLE);
                 ExpenseDetailAdapter mAdapter = new ExpenseDetailAdapter(getActivity(), ExpenseDetailFragment.this, allExpenses, getArguments().getInt("clientIDFromDialog"));
                 ExpenseView.setAdapter(mAdapter);

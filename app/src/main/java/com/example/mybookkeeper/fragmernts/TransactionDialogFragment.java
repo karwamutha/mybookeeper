@@ -132,6 +132,7 @@ public class TransactionDialogFragment extends Fragment {
             mngIdFromFromClients = getArguments().getInt("mngIdFromFromClients");
             acntIdFromClients = getArguments().getInt("acntIdFromClients");
             subAccIdFromClients = getArguments().getInt("subAccIdFromClients");
+            subAccNameFromClients = getArguments().getString("subAccNameFromClients");
             clientIDFromClients = getArguments().getInt("clientIDFromClients");
 //            tvClient.setText(clientNameFromClients);
             clientIDFromClients = getArguments().getInt("clientIDFromClients");

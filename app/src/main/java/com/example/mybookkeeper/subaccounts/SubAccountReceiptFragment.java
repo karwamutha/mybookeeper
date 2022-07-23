@@ -200,7 +200,9 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
             @Override
             public void onChanged(UIDataStore.Result<List<SubAccountTotal>> listResult) {
                 List<SubAccountTotal> allReceipts = listResult.getResult();
-                if (allReceipts.size() > 0) {
+                if (listResult.isFailure()){
+                    displayNonBlockingError(getContext(), listResult.getException());
+                } else if (allReceipts != null && allReceipts.size() > 0) {
                     SubAccountReceiptView.setVisibility(View.VISIBLE);
                     SubAccountReceiptAdapter mAdapter = new SubAccountReceiptAdapter(getActivity(), SubAccountReceiptFragment.this, allReceipts, getArguments().getInt("acntIdFromDialog"));
                     SubAccountReceiptView.setAdapter(mAdapter);

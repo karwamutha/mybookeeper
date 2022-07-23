@@ -116,12 +116,6 @@ public class AddExpenseFragment extends Fragment {
             public void onClick(View view) {
                 final String date = eDate.getText().toString();
                 final int expNo = Integer.parseInt(eExpNo.getText().toString());
-                clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
-                mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
-                acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
-                ;
-                clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
                 final int expMngId = mngIdFromFFromDialog;
                 final int expAccId = acntIdFFromDialog;
                 final int expSubaccId = subAccIdFFromDialog;

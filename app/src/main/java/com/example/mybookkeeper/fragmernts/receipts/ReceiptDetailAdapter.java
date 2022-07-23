@@ -63,6 +63,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
         final ReceiptData receiptData = listReceiptDatas.get(position);
         holder.tvDate.setText(receiptData.getDate());
         holder.tvAmount.setText("" + receiptData.getAmount());
+        holder.tvClientName.setText(receiptData.getCltName());
         holder.editReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -227,6 +228,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
 
         TextView tvDate;
         TextView tvAmount;
+        TextView tvClientName;
         ImageView editReceipt;
         ImageView deleteReceipt;
 
@@ -234,6 +236,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
             super(itemView);
             tvDate = itemView.findViewById(R.id.tvDate);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvClientName = itemView.findViewById(R.id.clientName);
             editReceipt = itemView.findViewById(R.id.editReceipt);
             deleteReceipt = itemView.findViewById(R.id.deleteReceipt);
         }

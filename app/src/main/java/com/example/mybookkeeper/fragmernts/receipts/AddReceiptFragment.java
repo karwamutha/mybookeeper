@@ -3,6 +3,7 @@ package com.example.mybookkeeper.fragmernts.receipts;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,11 @@ import java.util.Date;
 public class AddReceiptFragment extends Fragment {
 
     private UIDataStore mDatabase;
-    EditText eRctNo, eDate, eSubName, eCltName, eMgclid, eAccId, eSubaccId, eClientId, eAmount;
-    Button btnInsert, btnClear;
-    String NameHolder, NumberHolder, UIDataStoreQueryHolder;
+    EditText eRctNo;
+    EditText eDate;
+    EditText eSubName;
+    EditText eCltName;
+    EditText eAmount;
     Button buttonEnter;
     View buttonClear;
 
@@ -37,6 +40,7 @@ public class AddReceiptFragment extends Fragment {
     int subAccIdFFromDialog;
     int clientIDFFromDialog;
     private ProgressDialog progress;
+    private String subAccNameFFromDialog;
 
     public static AddReceiptFragment getInstance(int clientID) {
         AddReceiptFragment r = new AddReceiptFragment();
@@ -71,8 +75,10 @@ public class AddReceiptFragment extends Fragment {
             mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
             acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
             subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
-            ;
+            subAccNameFFromDialog = getArguments().getString("subAccNameFromDialog");
             clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
+            eCltName.setText(clientNameFFromDialog);
+            eSubName.setText(subAccNameFFromDialog);
             ((MainActivity) getActivity()).getSupportActionBar().setTitle("Receipt for ");
             ((MainActivity) getActivity()).getSupportActionBar().setSubtitle(clientNameFFromDialog);
         } else {
@@ -116,12 +122,6 @@ public class AddReceiptFragment extends Fragment {
             public void onClick(View view) {
                 final String date = eDate.getText().toString();
                 final int rctNo = Integer.parseInt(eRctNo.getText().toString());
-                clientNameFFromDialog = getArguments().getString("clientNameFFromDialog");
-                mngIdFromFFromDialog = getArguments().getInt("mngIdFromFFromDialog");
-                acntIdFFromDialog = getArguments().getInt("acntIdFFromDialog");
-                subAccIdFFromDialog = getArguments().getInt("subAccIdFFromDialog");
-                ;
-                clientIDFFromDialog = getArguments().getInt("clientIDFFromDialog");
                 final int rctMngId = mngIdFromFFromDialog;
                 final int rctAccId = acntIdFFromDialog;
                 final int rctSubaccId = subAccIdFFromDialog;

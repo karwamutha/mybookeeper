@@ -51,9 +51,9 @@
         android:padding="12dp">
 
         <TextView
-            android:id="@+id/tvDescriptipn"
+            android:id="@+id/clientName"
             android:layout_width="250dp"
-            android:text="Descriptipn"
+            android:text="Subaccount Name"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"/>
 

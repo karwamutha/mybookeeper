@@ -17,10 +17,10 @@
             android:id="@+id/enterMgid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter account woner"
+            android:hint="Manager Id"
             android:layout_marginTop="10dp"
             android:textSize="12sp"
-            android:inputType="text"
+            android:inputType="none"
             android:maxLines="1"
             android:layout_marginEnd="8dp"
             android:padding="12dp"/>

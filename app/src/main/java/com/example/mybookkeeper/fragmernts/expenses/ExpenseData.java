@@ -26,6 +26,9 @@ public class ExpenseData {
     @JsonProperty(SqliteDatabase.EXPENSE_AMOUNT)
     private double amt;
 
+    public ExpenseData() {
+    }
+
     public ExpenseData(int expId, String date, int expNo, int mgid,
                        int accId, int subId, int clientId, String cltName,
                        String descr, double amt) {

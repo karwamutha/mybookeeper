@@ -181,7 +181,9 @@ public class ReceiptDetailFragment extends Fragment implements RefreshableFragme
             @Override
             public void onChanged(UIDataStore.Result<List<ReceiptData>> listResult) {
                 List<ReceiptData> allReceipts = listResult.getResult();
-                if (allReceipts != null && allReceipts.size() > 0) {
+                if (listResult.isFailure()){
+                    displayNonBlockingError(getContext(), listResult.getException());
+                } else if (allReceipts != null && allReceipts.size() > 0) {
                     ReceiptView.setVisibility(View.VISIBLE);
                     ReceiptDetailAdapter mAdapter = new ReceiptDetailAdapter(getActivity(), ReceiptDetailFragment.this, allReceipts, getArguments().getInt("clientIDFromDialog"));
                     ReceiptView.setAdapter(mAdapter);

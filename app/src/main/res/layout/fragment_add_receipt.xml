@@ -75,13 +75,15 @@
             xmlns:android="http://schemas.android.com/apk/res/android">
 
             <EditText
+                android:editable="false"
+                android:inputType="none"
                 android:id="@+id/eClientName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
-                android:hint="Subaccount Name"/>
+                android:hint="Client Name"/>
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
     <LinearLayout
@@ -102,12 +104,14 @@
 
             <EditText
                 android:id="@+id/eSubAccName"
+                android:inputType="none"
+                android:editable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
-                android:hint="AccID"/>
+                android:hint="Sub Account Name"/>
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>

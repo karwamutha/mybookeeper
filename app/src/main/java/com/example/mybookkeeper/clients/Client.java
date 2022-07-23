@@ -2,7 +2,9 @@ package com.example.mybookkeeper.clients;
 
 import com.example.mybookkeeper.data.SqliteDatabase;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class Client {
     @JsonProperty(SqliteDatabase.CLIENT_ID)
@@ -35,8 +37,14 @@ public class Client {
         this.cltSubId = cltSubId;
     }
 
+    @JsonGetter(SqliteDatabase.CLIENT_ID)
     public int getId() {
         return Id;
+    }
+
+    @JsonSetter(SqliteDatabase.CLIENT_ID)
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getCltName() {

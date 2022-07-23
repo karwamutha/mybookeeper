@@ -95,12 +95,12 @@
         android:id="@+id/btnRctDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/design_default_color_secondary_variant"
-        android:textColor="@color/white"
         android:layout_below="@+id/tvRctDetails"
         android:layout_marginLeft="30sp"
         android:layout_marginRight="30sp"
-        android:text="Receipts" />
+        android:backgroundTint="@color/design_default_color_secondary_variant"
+        android:text="Receipts"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/btnAllReceipts"
@@ -110,8 +110,8 @@
         android:layout_marginLeft="30sp"
         android:layout_marginRight="30sp"
         android:backgroundTint="@color/design_default_color_secondary_variant"
-        android:textColor="@color/white"
-        android:text="All Receipts" />
+        android:text="All Receipts"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tvExpDetails"

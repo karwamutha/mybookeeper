@@ -81,7 +81,9 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:ems="10"
-                android:hint="Subaccount Name"/>
+                android:inputType="none"
+                android:editable="false"
+                android:hint="Client Name"/>
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
     <LinearLayout

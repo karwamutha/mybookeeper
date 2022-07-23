@@ -233,7 +233,9 @@ public class AccountReceiptFragment extends Fragment implements RefreshableFragm
         }
         allReceipts.observe(getViewLifecycleOwner(), listResult -> {
             List<AccountTotal> result = listResult.getResult();
-            if (result != null && result.size() > 0) {
+            if (listResult.isFailure()){
+                displayNonBlockingError(getContext(), listResult.getException());
+            } else if (result != null && result.size() > 0) {
                 AccountReceiptView.setVisibility(View.VISIBLE);
                 AccountReceiptAdapter mAdapter = new AccountReceiptAdapter(getActivity(), this, result, getArguments().getInt("mngIdFromNewPwd"));
                 AccountReceiptView.setAdapter(mAdapter);

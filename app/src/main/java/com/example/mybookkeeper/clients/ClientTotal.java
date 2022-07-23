@@ -9,7 +9,7 @@ import com.example.mybookkeeper.fragmernts.TransactionDialogFragment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-public class ClientTotal extends RecyclerView.Adapter {
+public class ClientTotal {
     @JsonUnwrapped
     private Client client;
     private double receiptsTotal;
@@ -52,19 +52,4 @@ public class ClientTotal extends RecyclerView.Adapter {
         this.expensesTotal = expensesTotal;
     }
 
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull  ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull  RecyclerView.ViewHolder holder, int position) {
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return 0;
-    }
 }

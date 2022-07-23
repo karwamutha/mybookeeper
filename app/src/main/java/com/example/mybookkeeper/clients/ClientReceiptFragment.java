@@ -197,12 +197,14 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         showProgressDialog("Loading data...");
         //Toast.makeText(getActivity(), ""+mngIdFromDialog, Toast.LENGTH_LONG).show();
         UIDataStore.UiData<List<ClientTotal>> totalReceipts =
-                mDatabase.listClientTotalReceipts(startDate, endDate, mngIdFromSubacc);
+                mDatabase.listClientTotalReceipts(startDate, endDate, subAccIdFromSubacc);
         totalReceipts.observe(getViewLifecycleOwner(), new Observer<UIDataStore.Result<List<ClientTotal>>>() {
             @Override
             public void onChanged(UIDataStore.Result<List<ClientTotal>> listResult) {
                 List<ClientTotal> allReceipts = listResult.getResult();
-                if (allReceipts.size() > 0) {
+                if (listResult.isFailure()){
+                    displayNonBlockingError(getContext(), listResult.getException());
+                } else if (allReceipts != null && allReceipts.size() > 0) {
                     ClientReceiptView.setVisibility(View.VISIBLE);
                     ClientReceiptAdapter mAdapter = new ClientReceiptAdapter(getActivity(), ClientReceiptFragment.this, allReceipts, getArguments().getInt("cltSubIdFromSub"));
                     ClientReceiptView.setAdapter(mAdapter);
