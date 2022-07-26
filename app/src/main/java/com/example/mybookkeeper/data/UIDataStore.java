@@ -1,8 +1,6 @@
 package com.example.mybookkeeper.data;
 
-import android.content.Context;
-import android.util.Log;
-
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.mybookkeeper.accounts.Account;
@@ -26,8 +24,16 @@ public class UIDataStore {
     private final BaseDataStore baseDataStore;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public UIDataStore(Context context) {
-        baseDataStore = new OnlineDataStore(context);
+    public UIDataStore(BaseDataStore baseDataStore) {
+        this.baseDataStore = baseDataStore;
+    }
+
+    private static final class StoreHolder {
+        static final UIDataStore store = new UIDataStore(new OnlineDataStore());
+    }
+
+    public static UIDataStore getInstance() {
+        return StoreHolder.store;
     }
 
     public UiData<Manager> searchManagerByPhone(String phoneNo, String password) {

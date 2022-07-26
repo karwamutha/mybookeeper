@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +46,7 @@ public class ReceiptDetailAdapter<S> extends RecyclerView.Adapter<ReceiptDetailA
         this.refreshable = (RefreshableFragment) refreshable;
         this.listReceiptDatas = listReceiptDatas;
         this.clientId = clientId;
-        mDatabase = new UIDataStore(context);
+        mDatabase = UIDataStore.getInstance();
     }
 
     @Override

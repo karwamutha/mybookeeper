@@ -74,7 +74,7 @@ public class ExpenseDetailFragment extends Fragment implements RefreshableFragme
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ExpenseView.setLayoutManager(linearLayoutManager);
         ExpenseView.setHasFixedSize(true);
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eExpNo = v.findViewById(R.id.eExpNo);
         eAmount = v.findViewById(R.id.eAmount);
         dateFrom = v.findViewById(R.id.edDateFrom);

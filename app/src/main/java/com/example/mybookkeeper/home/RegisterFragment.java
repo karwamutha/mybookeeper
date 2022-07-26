@@ -52,7 +52,7 @@ public class RegisterFragment extends Fragment {
         eNewPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
         eName = v.findViewById(R.id.fullName);
         eRegister = v.findViewById(R.id.Submit);
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         if (getArguments() != null) {
             mngNameFromHomePwd = getArguments().getString("mngNameFromHomePwd");
             eName.setText(mngNameFromHomePwd);

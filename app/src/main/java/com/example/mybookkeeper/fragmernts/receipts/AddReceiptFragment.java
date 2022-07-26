@@ -60,7 +60,7 @@ public class AddReceiptFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_add_receipt, container, false);
 
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eRctNo = view.findViewById(R.id.eRctNo);
         eCltName = view.findViewById(R.id.eClientName);
         eSubName = view.findViewById(R.id.eSubAccName);

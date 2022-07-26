@@ -41,7 +41,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
         this.refreshable = (RefreshableFragment) refreshable;
         this.SubAccountReceiptAdapter = SubAccountReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new UIDataStore(context);
+        mDatabase = UIDataStore.getInstance();
     }
 
     @Override

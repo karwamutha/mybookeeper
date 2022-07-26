@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +40,7 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
         this.refreshable = (RefreshableFragment) refreshable;
         this.ManagerReceiptAdapter = ManagerReceiptAdapter;
         this.mngId = mngId;
-        mDatabase = new UIDataStore(context);
+        mDatabase = UIDataStore.getInstance();
     }
 
     @Override

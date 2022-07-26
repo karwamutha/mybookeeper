@@ -79,7 +79,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         SubAccountReceiptView.setLayoutManager(linearLayoutManager);
         SubAccountReceiptView.setHasFixedSize(true);
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eAmount = view.findViewById(R.id.eAmount);
         buttonAdd = view.findViewById(R.id.btnAdd);
         dateFrom = view.findViewById(R.id.edDateFrom);

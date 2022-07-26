@@ -53,7 +53,7 @@ public class AddExpenseFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eDate = view.findViewById(R.id.eDate);
         eExpNo = view.findViewById(R.id.eExpNo);
         eCltName = view.findViewById(R.id.eClientName);

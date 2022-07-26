@@ -46,7 +46,7 @@ public class NewPWordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_p_word, container, false);
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eName = v.findViewById(R.id.tvName);
         ePassword = v.findViewById(R.id.enterNewPWord);
         eRegister = v.findViewById(R.id.Submit);

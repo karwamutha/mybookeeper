@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
         RelativeLayout passwordButton = view.findViewById(R.id.btnChangePassword);
         RelativeLayout openButton = view.findViewById(R.id.btnOpen);
 
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         final EditText ePhone = view.findViewById(R.id.edPhone);
         final EditText ePassword = view.findViewById(R.id.edPassword);
         eAttempts = view.findViewById(R.id.edAttempts);

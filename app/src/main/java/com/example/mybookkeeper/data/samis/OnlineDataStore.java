@@ -1,7 +1,5 @@
 package com.example.mybookkeeper.data.samis;
 
-import android.content.Context;
-
 import com.example.mybookkeeper.accounts.Account;
 import com.example.mybookkeeper.accounts.AccountTotal;
 import com.example.mybookkeeper.clients.Client;
@@ -48,18 +46,14 @@ public class OnlineDataStore implements BaseDataStore {
     };
     private static final TypeReference<List<ExpenseData>> EXPENSE_DATA_LIST_TYPE = new TypeReference<List<ExpenseData>>() {
     };
-    private final Context context;
-    private final String url;
     private final SbitKenyaLedgerApi ledgerService;
 
 
-    public OnlineDataStore(Context context) {
-        this(context, URL);
+    public OnlineDataStore() {
+        this(URL);
     }
 
-    public OnlineDataStore(Context context, String url) {
-        this.context = context;
-        this.url = url;
+    public OnlineDataStore(String url) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(JacksonConverterFactory.create(SbitKenyaLedgerApi.mapper))

@@ -80,7 +80,7 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         ClientReceiptView.setLayoutManager(linearLayoutManager);
         ClientReceiptView.setHasFixedSize(true);
-        mDatabase = new UIDataStore(getActivity());
+        mDatabase = UIDataStore.getInstance();
         eRctNo = view.findViewById(R.id.eRctNo);
         eAmount = view.findViewById(R.id.eAmount);
 
