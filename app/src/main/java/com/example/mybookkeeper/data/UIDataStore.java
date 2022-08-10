@@ -1,6 +1,5 @@
 package com.example.mybookkeeper.data;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.mybookkeeper.accounts.Account;
@@ -21,19 +20,23 @@ import java.util.concurrent.Executors;
 
 public class UIDataStore {
 
+    private static UIDataStore store;
     private final BaseDataStore baseDataStore;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public UIDataStore(BaseDataStore baseDataStore) {
         this.baseDataStore = baseDataStore;
     }
 
-    private static final class StoreHolder {
-        static final UIDataStore store = new UIDataStore(new OnlineDataStore());
-    }
-
     public static UIDataStore getInstance() {
-        return StoreHolder.store;
+        synchronized (UIDataStore.class) {
+            if (store == null) {
+                synchronized (UIDataStore.class) {
+                    store = new UIDataStore(new OnlineDataStore());
+                }
+            }
+        }
+        return store;
     }
 
     public UiData<Manager> searchManagerByPhone(String phoneNo, String password) {
@@ -134,8 +137,10 @@ public class UIDataStore {
     }
 
     public void close() {
-        baseDataStore.close();
-        executor.shutdownNow();
+        synchronized (UIDataStore.class) {
+            baseDataStore.close();
+            store = null;
+        }
     }
 
     public UiData<List<ClientTotal>> listClientTotalReceipts(String startDate, String endDate, int mngIdFromSubacc) {
