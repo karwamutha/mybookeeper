@@ -59,7 +59,7 @@ public class SubAccountReceiptAdapter<S> extends RecyclerView.Adapter<SubAccount
         holder.tvName.setText(subAccountTotal.getSubAccount().getSubAccName());
         holder.tvReceiptAmount.setText("" + subAccountTotal.getReceiptsTotal());
         holder.tvExpenseAmount.setText("" + subAccountTotal.getExpensesTotal());
-        holder.tvBalanceAmount.setText("" + (subAccountTotal.getReceiptsTotal() - subAccountTotal.getExpensesTotal()));
+        holder.tvBalanceAmount.setText("" + (subAccountTotal.getBalance()));
         holder.viewSubAccountReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

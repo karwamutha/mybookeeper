@@ -1,10 +1,5 @@
 package com.example.mybookkeeper.clients;
 
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.mybookkeeper.fragmernts.TransactionDialogFragment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -14,18 +9,17 @@ public class ClientTotal {
     private Client client;
     private double receiptsTotal;
     private double expensesTotal;
+    private double balance;
 
     @JsonCreator
     public ClientTotal() {
     }
 
-    public ClientTotal(Client client, double receiptsTotal, double expensesTotal) {
+    public ClientTotal(Client client, double receiptsTotal, double expensesTotal, double balance) {
         this.client = client;
         this.receiptsTotal = receiptsTotal;
         this.expensesTotal = expensesTotal;
-    }
-
-    public ClientTotal(TransactionDialogFragment transactionDialogFragment) {
+        this.balance = balance;
     }
 
     public Client getClient() {
@@ -52,4 +46,11 @@ public class ClientTotal {
         this.expensesTotal = expensesTotal;
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 }

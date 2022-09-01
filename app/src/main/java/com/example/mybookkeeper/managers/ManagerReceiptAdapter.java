@@ -58,7 +58,7 @@ public class ManagerReceiptAdapter<S> extends RecyclerView.Adapter<ManagerReceip
         holder.tvName.setText(managerTotal.getManager().getManagerName());
         holder.tvReceiptAmount.setText("" + managerTotal.getReceiptsTotal());
         holder.tvExpenseAmount.setText("" + managerTotal.getExpensesTotal());
-        holder.tvBalanceAmount.setText("" + (managerTotal.getReceiptsTotal() - managerTotal.getExpensesTotal()));
+        holder.tvBalanceAmount.setText("" + (managerTotal.getBalance()));
         holder.viewManagerReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

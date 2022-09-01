@@ -8,6 +8,7 @@ public class ManagerTotal {
     private Manager manager;
     private double receiptsTotal;
     private double expensesTotal;
+    private double balance;
 
     @JsonCreator
     public ManagerTotal() {
@@ -41,6 +42,15 @@ public class ManagerTotal {
 
     public void setExpensesTotal(double expensesTotal) {
         this.expensesTotal = expensesTotal;
+    }
+
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }
 //public class ManagerTotal {

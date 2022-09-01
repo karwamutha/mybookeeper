@@ -8,6 +8,7 @@ public class SubAccountTotal {
     private SubAccount subaccount;
     private double receiptsTotal;
     private double expensesTotal;
+    private double balance;
 
     @JsonCreator
     public SubAccountTotal() {
@@ -41,5 +42,13 @@ public class SubAccountTotal {
 
     public void setExpensesTotal(double expensesTotal) {
         this.expensesTotal = expensesTotal;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }

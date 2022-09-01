@@ -626,7 +626,7 @@ public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
                 ClientTotal clientTotal = new ClientTotal(
                         client,
                         cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
-                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")));
+                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")), balance);
                 items.add(clientTotal);
             }
         } catch (Exception er){
@@ -665,7 +665,7 @@ public class SqliteDatabase extends SQLiteOpenHelper implements BaseDataStore {
                 ClientTotal clientTotal = new ClientTotal(
                         client,
                         cursor.getDouble(cursor.getColumnIndex("ReceiptsTotal")),
-                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")));
+                        cursor.getDouble(cursor.getColumnIndex("ExpensesTotal")), balance);
                 items.add(clientTotal);
             }
         } catch (Exception er){
