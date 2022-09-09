@@ -279,7 +279,7 @@ public class SubAccountReceiptFragment extends Fragment implements RefreshableFr
         args.putInt("subAccIdFromSubacc", subAccountTotal.getSubAccount().getSubAccId());
         args.putString("subAccNameFromSubaccs", subAccountTotal.getSubAccount().getSubAccName());
         args.putInt("acntIdFromSubaccs", accIdFromAccs);
-        args.putInt("mngIdFromSubacc", accIdFromAccs);
+        args.putInt("mngIdFromSubacc", mngIdFromAccs);
         args.putString("startDate", dateFrom.getText().toString());
         args.putString("endDate", dateTo.getText().toString());
         args.putString("startDate", dateFrom.getText().toString());

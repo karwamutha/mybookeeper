@@ -1,14 +1,13 @@
 package com.example.mybookkeeper.clients;
 
-import com.example.mybookkeeper.fragmernts.TransactionDialogFragment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class ClientTotal {
     @JsonUnwrapped
     private Client client;
-    private double receiptsTotal;
-    private double expensesTotal;
+    private double ReceiptsTotal;
+    private double ExpensesTotal;
     private double balance;
 
     @JsonCreator
@@ -17,8 +16,8 @@ public class ClientTotal {
 
     public ClientTotal(Client client, double receiptsTotal, double expensesTotal, double balance) {
         this.client = client;
-        this.receiptsTotal = receiptsTotal;
-        this.expensesTotal = expensesTotal;
+        this.ReceiptsTotal = receiptsTotal;
+        this.ExpensesTotal = expensesTotal;
         this.balance = balance;
     }
 
@@ -31,19 +30,19 @@ public class ClientTotal {
     }
 
     public double getReceiptsTotal() {
-        return receiptsTotal;
+        return ReceiptsTotal;
     }
 
     public void setReceiptsTotal(double receiptsTotal) {
-        this.receiptsTotal = receiptsTotal;
+        this.ReceiptsTotal = receiptsTotal;
     }
 
     public double getExpensesTotal() {
-        return expensesTotal;
+        return ExpensesTotal;
     }
 
     public void setExpensesTotal(double expensesTotal) {
-        this.expensesTotal = expensesTotal;
+        this.ExpensesTotal = expensesTotal;
     }
 
     public double getBalance() {

@@ -49,7 +49,6 @@ public class ClientReceiptFragment extends Fragment implements RefreshableFragme
 
     String subAccNameFromSubaccs;
     int mngIdFromSubacc;
-    ;
     int acntIdFromSubaccs;
     int subAccIdFromSubacc;
     private ProgressDialog progress;
