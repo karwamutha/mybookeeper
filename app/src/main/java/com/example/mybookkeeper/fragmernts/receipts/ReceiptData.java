@@ -13,7 +13,7 @@ public class ReceiptData {
     private int rctNo;
     @JsonProperty(SqliteDatabase.REC_MG_ID)
     private int mgid;
-    @JsonProperty(SqliteDatabase.REC_MG_ID)
+    @JsonProperty(SqliteDatabase.REC_ACC_ID)
     private int accId;
     @JsonProperty(SqliteDatabase.REC_SUBAC_ID)
     private int subId;
